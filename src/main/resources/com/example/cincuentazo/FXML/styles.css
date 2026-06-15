@@ -1,0 +1,517 @@
+/* =======================================================
+   GENERAL
+   ======================================================= */
+
+.root,
+.main-background{
+    -fx-background-color:#131313;
+    -fx-font-family:"Segoe UI";
+}
+
+/* =======================================================
+   TOP BAR
+   ======================================================= */
+
+.top-bar{
+    -fx-background-color:rgba(18,18,18,0.90);
+    -fx-border-color:transparent transparent rgba(255,255,255,0.08) transparent;
+    -fx-padding:0 10 0 10;
+}
+
+.logo-text{
+
+    -fx-text-fill:#e9c349;
+    -fx-font-size:28;
+    -fx-font-weight:bold;
+
+}
+
+.icon-button{
+
+    -fx-background-color:transparent;
+    -fx-background-radius:100;
+
+    -fx-text-fill:white;
+
+    -fx-font-size:18;
+
+    -fx-cursor:hand;
+
+}
+
+.icon-button:hover{
+
+    -fx-background-color:rgba(255,255,255,.08);
+
+}
+
+/* =======================================================
+   AVATAR
+   ======================================================= */
+
+.avatar-small{
+
+    -fx-background-color:#2f2f2f;
+    -fx-background-radius:100;
+
+    -fx-border-color:#5c5c5c;
+    -fx-border-radius:100;
+
+}
+
+.player-avatar{
+
+    -fx-fill:#2f2f2f;
+
+    -fx-stroke:#555;
+    -fx-stroke-width:2;
+
+}
+
+.player-avatar-active{
+
+    -fx-fill:#2f2f2f;
+
+    -fx-stroke:#a1d2ab;
+    -fx-stroke-width:3;
+
+}
+
+.online-indicator{
+
+    -fx-fill:#7ff28d;
+
+}
+
+/* =======================================================
+   TABLERO
+   ======================================================= */
+
+.poker-surface{
+
+    -fx-background-color:
+            radial-gradient(
+                    center 50% 40%,
+                    radius 90%,
+                    #245b33 0%,
+                    #174326 45%,
+                    #0b2515 100%
+            );
+
+}
+
+/* =======================================================
+   SIDEBAR
+   ======================================================= */
+
+.sidebar{
+
+    -fx-background-color:rgba(0,0,0,.20);
+
+    -fx-border-color:
+            transparent
+            transparent
+            transparent
+            rgba(255,255,255,.08);
+
+}
+
+/* =======================================================
+   GLASS
+   ======================================================= */
+
+.glass-panel{
+
+    -fx-background-color:
+            rgba(255,255,255,.06);
+
+    -fx-background-radius:18;
+
+    -fx-border-radius:18;
+
+    -fx-border-color:
+            rgba(255,255,255,.10);
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0,0,0,.35),
+                    25,
+                    .20,
+                    0,
+                    8);
+
+}
+
+/* =======================================================
+   MAZO
+   ======================================================= */
+
+.deck-card{
+
+    -fx-background-color:
+            linear-gradient(
+                    to bottom,
+                    #e9c349,
+                    #af8d11);
+
+    -fx-background-radius:12;
+
+    -fx-border-radius:12;
+
+}
+
+.deck-number{
+
+    -fx-font-size:34;
+
+    -fx-font-weight:bold;
+
+    -fx-text-fill:white;
+
+}
+
+/* =======================================================
+   TEXTOS
+   ======================================================= */
+
+.section-title{
+
+    -fx-text-fill:#e9c349;
+
+    -fx-font-size:13;
+
+    -fx-font-weight:bold;
+
+}
+
+.section-subtitle{
+
+    -fx-text-fill:#c1c9bf;
+
+    -fx-font-size:11;
+
+}
+
+.section-icon{
+
+    -fx-font-size:15;
+
+    -fx-text-fill:#888;
+
+}
+
+.player-name{
+
+    -fx-text-fill:white;
+
+    -fx-font-size:13;
+
+    -fx-font-weight:bold;
+
+}
+
+/* =======================================================
+   HISTORIAL
+   ======================================================= */
+
+.list-view{
+
+    -fx-background-color:transparent;
+
+}
+
+.list-view .viewport{
+
+    -fx-background-color:transparent;
+
+}
+
+.list-cell{
+
+    -fx-background-color:transparent;
+
+    -fx-text-fill:white;
+
+}
+
+/* =======================================================
+   ESTADO
+   ======================================================= */
+
+.status-badge{
+
+    -fx-background-color:#8a1f1f;
+
+    -fx-background-radius:20;
+
+    -fx-padding:4 10;
+
+    -fx-text-fill:white;
+
+    -fx-font-size:11;
+
+}
+
+.stat-box{
+
+    -fx-background-color:
+            rgba(255,255,255,.05);
+
+    -fx-background-radius:10;
+
+}
+
+.stat-title{
+
+    -fx-font-size:11;
+
+    -fx-text-fill:#bfbfbf;
+
+}
+
+.stat-value{
+
+    -fx-font-size:18;
+
+    -fx-font-weight:bold;
+
+    -fx-text-fill:white;
+
+}
+
+/* =======================================================
+   CONTADOR CENTRAL
+   ======================================================= */
+
+.counter-title{
+
+    -fx-text-fill:#e9c349;
+
+    -fx-font-size:15;
+
+    -fx-font-weight:bold;
+
+}
+
+.counter-value{
+
+    -fx-font-size:64;
+
+    -fx-font-weight:bold;
+
+    -fx-text-fill:white;
+
+}
+
+/* =======================================================
+   CARTAS
+   ======================================================= */
+
+.card-base{
+
+    -fx-background-color:white;
+
+    -fx-background-radius:12;
+
+    -fx-border-radius:12;
+
+}
+
+.card-back{
+
+    -fx-background-color:#1a472a;
+
+    -fx-background-radius:6;
+
+    -fx-border-color:
+            rgba(255,255,255,.20);
+
+    -fx-border-radius:6;
+
+}
+
+.card-shadow{
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0,0,0,.45),
+                    18,
+                    .25,
+                    0,
+                    6);
+
+}
+
+.card-selected{
+
+    -fx-border-color:#e9c349;
+
+    -fx-border-width:2;
+
+    -fx-border-radius:12;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    #d4af37,
+                    20,
+                    .40,
+                    0,
+                    0);
+
+}
+
+.played-card{
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0,0,0,.55),
+                    35,
+                    .30,
+                    0,
+                    12);
+
+}
+
+/* =======================================================
+   NUMEROS CARTAS
+   ======================================================= */
+
+.card-number{
+
+    -fx-font-size:18;
+
+    -fx-font-weight:bold;
+
+    -fx-text-fill:black;
+
+}
+
+.card-number-red{
+
+    -fx-font-size:18;
+
+    -fx-font-weight:bold;
+
+    -fx-text-fill:#d63b3b;
+
+}
+
+.card-symbol{
+
+    -fx-font-size:48;
+
+    -fx-text-fill:black;
+
+}
+
+.card-symbol-red{
+
+    -fx-font-size:48;
+
+    -fx-text-fill:#d63b3b;
+
+}
+
+.card-symbol-large-red{
+
+    -fx-font-size:62;
+
+    -fx-text-fill:#d63b3b;
+
+}
+
+/* =======================================================
+   BADGES
+   ======================================================= */
+
+.selected-badge{
+
+    -fx-background-color:#e9c349;
+
+    -fx-background-radius:25;
+
+    -fx-padding:5 14;
+
+    -fx-font-size:11;
+
+    -fx-font-weight:bold;
+
+    -fx-text-fill:#2c2200;
+
+}
+
+.turn-badge{
+
+    -fx-background-color:#1a472a;
+
+    -fx-background-radius:100;
+
+    -fx-border-color:
+            rgba(255,255,255,.12);
+
+    -fx-border-radius:100;
+
+}
+
+.turn-icon{
+
+    -fx-text-fill:#9ef5b0;
+
+    -fx-font-size:20;
+
+}
+
+.turn-text{
+
+    -fx-text-fill:#9ef5b0;
+
+    -fx-font-size:18;
+
+    -fx-font-weight:bold;
+
+}
+
+/* =======================================================
+   BOTON
+   ======================================================= */
+
+.play-button{
+
+    -fx-background-color:#e9c349;
+
+    -fx-background-radius:100;
+
+    -fx-text-fill:#2d2200;
+
+    -fx-font-size:18;
+
+    -fx-font-weight:bold;
+
+    -fx-cursor:hand;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0,0,0,.35),
+                    20,
+                    .25,
+                    0,
+                    5);
+
+}
+
+.play-button:hover{
+
+    -fx-background-color:#f6d560;
+
+}
+
+.play-button:pressed{
+
+    -fx-background-color:#d6ae28;
+
+}
