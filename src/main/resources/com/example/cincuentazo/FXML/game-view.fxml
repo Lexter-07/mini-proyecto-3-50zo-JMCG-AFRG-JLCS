@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane prefHeight="750.0" prefWidth="1000.0" styleClass="main-background" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+
+   <!-- ========================= -->
+   <!-- BARRA SUPERIOR -->
+   <!-- ========================= -->
+
+   <top>
+
+      <HBox alignment="CENTER_LEFT" prefHeight="65" spacing="15" styleClass="top-bar">
+
+         <padding>
+            <Insets bottom="10" left="20" right="20" top="10" />
+         </padding>
+
+         <Label styleClass="logo-text" text="Cincuentazo" />
+
+         <Region HBox.hgrow="ALWAYS" />
+
+         <Button fx:id="settingsButton" styleClass="icon-button" text="⚙" />
+
+      </HBox>
+
+   </top>
+
+   <!-- ========================= -->
+   <!-- PANEL DERECHO -->
+   <!-- ========================= -->
+
+   <right>
+
+      <VBox prefWidth="300" spacing="18" styleClass="sidebar">
+
+         <padding>
+            <Insets bottom="20" left="20" right="20" top="20" />
+         </padding>
+
+         <!-- MAZO -->
+
+         <HBox alignment="CENTER_LEFT" spacing="15" styleClass="glass-panel">
+
+            <padding>
+               <Insets bottom="15" left="15" right="15" top="15" />
+            </padding>
+
+            <StackPane prefHeight="100" prefWidth="70" styleClass="deck-card" />
+
+            <VBox spacing="5">
+
+               <Label styleClass="section-title" text="MAZO" />
+
+               <Label fx:id="deckCountLabel" styleClass="deck-number" text="42" />
+
+               <Label styleClass="section-subtitle" text="Cartas restantes" />
+
+            </VBox>
+
+         </HBox>
+
+         <!-- HISTORIAL -->
+
+         <VBox spacing="10" styleClass="glass-panel" VBox.vgrow="ALWAYS">
+
+            <padding>
+               <Insets bottom="15" left="15" right="15" top="15" />
+            </padding>
+
+            <HBox alignment="CENTER_LEFT">
+
+               <Label styleClass="section-title" text="HISTORIAL" />
+
+               <Region HBox.hgrow="ALWAYS" />
+
+               <Label styleClass="section-icon" text="🕒" />
+
+            </HBox>
+
+            <ListView fx:id="historyList" VBox.vgrow="ALWAYS" />
+
+         </VBox>
+
+         <!-- ESTADO -->
+
+         <VBox spacing="15" styleClass="glass-panel">
+
+            <padding>
+               <Insets bottom="15" left="15" right="15" top="15" />
+            </padding>
+
+            <HBox alignment="CENTER_LEFT">
+
+               <Label styleClass="section-title" text="ESTADO" />
+
+               <Region HBox.hgrow="ALWAYS" />
+
+               <Label styleClass="status-badge" text="Intenso" />
+
+            </HBox>
+
+            <HBox spacing="10">
+
+               <VBox alignment="CENTER" styleClass="stat-box" HBox.hgrow="ALWAYS">
+
+                  <Label styleClass="stat-title" text="RONDA" />
+
+                  <Label fx:id="roundLabel" styleClass="stat-value" text="12" />
+
+               </VBox>
+
+               <VBox alignment="CENTER" styleClass="stat-box" HBox.hgrow="ALWAYS">
+
+                  <Label styleClass="stat-title" text="TIEMPO" />
+
+                  <Label fx:id="timeLabel" styleClass="stat-value" text="04:15" />
+
+               </VBox>
+
+            </HBox>
+
+         </VBox>
+
+      </VBox>
+
+   </right>
+
+   <!-- ========================= -->
+   <!-- TABLERO -->
+   <!-- ========================= -->
+
+   <center>
+
+      <StackPane styleClass="poker-surface">
+
+         <AnchorPane fx:id="tablePane" prefHeight="750" prefWidth="1000">
+            <!-- ========================================== -->
+            <!-- JUGADORES SUPERIORES -->
+            <!-- ========================================== -->
+
+            <HBox alignment="CENTER" layoutY="14.0" spacing="80" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="14.0">
+
+               <!-- ================= Máquina 1 ================= -->
+
+               <VBox alignment="CENTER" spacing="8">
+
+                  <StackPane>
+
+                     <Circle radius="33" styleClass="player-avatar" />
+
+                     <ImageView fitHeight="42" fitWidth="42" preserveRatio="true" />
+
+                     <Circle radius="5" styleClass="online-indicator" translateX="20" translateY="20" />
+
+                  </StackPane>
+
+                  <Label styleClass="player-name" text="Máquina 1" />
+
+                  <HBox alignment="CENTER" spacing="-10">
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                  </HBox>
+
+               </VBox>
+
+               <!-- ================= Máquina 2 ================= -->
+
+               <VBox alignment="CENTER" spacing="8">
+
+                  <StackPane>
+
+                     <Circle radius="33" styleClass="player-avatar-active" />
+
+                     <ImageView fitHeight="42" fitWidth="42" preserveRatio="true" />
+
+                     <Circle radius="5" styleClass="online-indicator" translateX="20" translateY="20" />
+
+                  </StackPane>
+
+                  <Label styleClass="player-name" text="Máquina 2" />
+
+                  <HBox alignment="CENTER" spacing="-10">
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                  </HBox>
+
+               </VBox>
+
+               <!-- ================= Máquina 3 ================= -->
+
+               <VBox alignment="CENTER" spacing="8">
+
+                  <StackPane>
+
+                     <Circle radius="33" styleClass="player-avatar" />
+
+                     <ImageView fitHeight="42" fitWidth="42" preserveRatio="true" />
+
+                     <Circle radius="5" styleClass="online-indicator" translateX="20" translateY="20" />
+
+                  </StackPane>
+
+                  <Label styleClass="player-name" text="Máquina 3" />
+
+                  <HBox alignment="CENTER" spacing="-10">
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                     <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+
+                  </HBox>
+
+               </VBox>
+
+            </HBox>
+
+            <!-- ========================================== -->
+            <!-- CONTADOR CENTRAL -->
+            <!-- ========================================== -->
+
+            <VBox alignment="CENTER" layoutX="419.2" layoutY="211.0" prefHeight="140.0" prefWidth="281.0" spacing="12" AnchorPane.leftAnchor="419.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="211.0">
+
+               <StackPane maxWidth="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="166.0" styleClass="glass-panel">
+
+                  <VBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="138.0" prefWidth="215.0" spacing="4">
+
+                     <padding>
+                        <Insets bottom="18" left="35" right="35" top="18" />
+                     </padding>
+
+                     <Label styleClass="counter-title" text="SUMA ACTUAL" />
+
+                     <Label fx:id="sumLabel" styleClass="counter-value" text="35" />
+
+                  </VBox>
+
+               </StackPane>
+
+            </VBox>
+
+            <!-- ========================================== -->
+            <!-- CARTA EN JUEGO -->
+            <!-- ========================================== -->
+
+            <StackPane fx:id="playedCardContainer" layoutX="290.0" layoutY="196.0" prefHeight="170" prefWidth="120" AnchorPane.leftAnchor="290.0" AnchorPane.topAnchor="196.0">
+
+               <Button fx:id="playedCardButton" focusTraversable="false" prefHeight="170" prefWidth="120" styleClass="card-button" />
+   
+               <ImageView fx:id="playedCardImage" fitHeight="165" fitWidth="115" mouseTransparent="true" preserveRatio="true" />
+
+            </StackPane>
+
+            <!-- ========================================== -->
+            <!-- BADGE TU TURNO -->
+            <!-- ========================================== -->
+
+            <HBox alignment="CENTER" layoutX="86.0" layoutY="256.0" spacing="10" styleClass="turn-badge" AnchorPane.leftAnchor="86.0" AnchorPane.topAnchor="256.0">
+
+               <padding>
+                  <Insets bottom="12" left="18" right="18" top="12" />
+               </padding>
+
+               <Label styleClass="turn-icon" text="★" />
+
+               <Label styleClass="turn-text" text="Tu turno" />
+
+            </HBox>
+
+            <!-- ========================================== -->
+            <!-- MANO DEL JUGADOR -->
+            <!-- ========================================== -->
+
+            <VBox alignment="CENTER" layoutY="475.0" spacing="22" AnchorPane.bottomAnchor="14.600000000000023" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+
+               <!-- Cartas -->
+
+               <HBox alignment="BOTTOM_CENTER" spacing="18">
+
+                  <!-- Carta 1 -->
+
+                  <StackPane prefHeight="170" prefWidth="120">
+
+                     <Button fx:id="cardButton1" focusTraversable="false" prefHeight="170" prefWidth="120" styleClass="card-button" />
+
+                     <ImageView fx:id="cardImage1" fitHeight="165" fitWidth="115" mouseTransparent="true" preserveRatio="true" />
+
+                  </StackPane>
+
+                  <!-- Carta 2 -->
+
+                  <StackPane prefHeight="170" prefWidth="120">
+
+                     <Button fx:id="cardButton2" focusTraversable="false" prefHeight="170" prefWidth="120" styleClass="card-button card-selected" />
+
+                     <ImageView fx:id="cardImage2" fitHeight="165" fitWidth="115" mouseTransparent="true" preserveRatio="true" />
+
+                  </StackPane>
+
+                  <!-- Carta 3 -->
+
+                  <StackPane prefHeight="170" prefWidth="120">
+
+                     <Button fx:id="cardButton3" focusTraversable="false" prefHeight="170" prefWidth="120" styleClass="card-button" />
+
+                     <ImageView fx:id="cardImage3" fitHeight="165" fitWidth="115" mouseTransparent="true" preserveRatio="true" />
+
+                  </StackPane>
+
+                  <!-- Carta 4 -->
+
+                  <StackPane prefHeight="170" prefWidth="120">
+
+                     <Button fx:id="cardButton4" focusTraversable="false" prefHeight="170" prefWidth="120" styleClass="card-button" />
+
+                     <ImageView fx:id="cardImage4" fitHeight="165" fitWidth="115" mouseTransparent="true" preserveRatio="true" />
+
+                  </StackPane>
+
+               </HBox>
+
+               <!-- Botón -->
+
+               <Button fx:id="playCardButton" prefHeight="52" prefWidth="260" styleClass="play-button" text="Jugar Carta" />
+
+            </VBox>
+
+         </AnchorPane>
+
+      </StackPane>
+
+   </center>
+
+</BorderPane>
