@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cincuentazo.controller.MenuController">
    <children>
       <Label layoutX="180.0" layoutY="49.0" text="CINCUENTAZO">
@@ -26,21 +25,25 @@
                   <Font size="15.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" style="-fx-background-radius: 20;" text="3 Jugadores">
+
+            <Button mnemonicParsing="false" onAction="#onHandlePlay3" style="-fx-background-radius: 20;" text="3 Jugadores">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" style="-fx-background-radius: 20;" text="4 Jugadores">
+
+            <Button mnemonicParsing="false" onAction="#onHandlePlay4" style="-fx-background-radius: 20;" text="4 Jugadores">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
+
             <Button mnemonicParsing="false" style="-fx-background-radius: 20;" text=" Instrucciones ">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
+
             <Button mnemonicParsing="false" onAction="#onHandleExit" style="-fx-background-radius: 15;" text=" Salir ">
                <font>
                   <Font size="14.0" />
