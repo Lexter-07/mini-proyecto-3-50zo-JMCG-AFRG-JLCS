@@ -1,5 +1,7 @@
 package com.example.cincuentazo.model;
 
+import com.example.cincuentazo.model.exceptions.EmptyDeckException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -133,10 +135,13 @@ public class Deck {
      * @return the first card of the deck
      * @throws IllegalStateException if the deck is empty
      */
-    public Card drawCard() {
+    public Card drawCard() throws EmptyDeckException {
 
-        if (cards.isEmpty()) {
-            throw new IllegalStateException("The deck is empty.");
+        if(cards.isEmpty()){
+
+            throw new EmptyDeckException(
+                    "The deck is empty."
+            );
         }
 
         return cards.remove(0);
@@ -167,6 +172,18 @@ public class Deck {
      */
     public List<Card> getCards() {
         return new ArrayList<>(cards);
+    }
+
+    /**
+     * Adds multiple cards to the deck.
+     *
+     * @param cards cards to add
+     */
+    public void addCards(List<Card> cards) {
+
+        this.cards.addAll(cards);
+
+        shuffle();
     }
 
     /**

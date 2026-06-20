@@ -1,0 +1,160 @@
+.menu-background{
+
+    -fx-background-color:
+            radial-gradient(
+                    center 50% 50%,
+                    radius 90%,
+                    #14652d 0%,
+                    #06361a 70%,
+                    #02170d 100%
+            );
+}
+
+.top-bar{
+
+    -fx-background-color:
+            rgba(0,0,0,0.45);
+
+    -fx-border-color:
+            rgba(255,255,255,0.05);
+
+    -fx-border-width:
+            0 0 1 0;
+}
+
+.top-title{
+
+    -fx-text-fill:#e9c349;
+    -fx-font-size:18;
+    -fx-font-weight:bold;
+}
+
+.top-icon{
+
+    -fx-background-color:transparent;
+    -fx-text-fill:white;
+    -fx-font-size:15;
+}
+
+.main-title{
+
+    -fx-text-fill:#e9c349;
+    -fx-font-size:58;
+    -fx-font-weight:bold;
+}
+
+.subtitle{
+
+    -fx-text-fill:#d5c37a;
+    -fx-font-size:14;
+    -fx-font-weight:bold;
+    -fx-letter-spacing:3;
+}
+
+.menu-panel{
+
+    -fx-background-color:
+            rgba(255,255,255,0.08);
+
+    -fx-background-radius:16;
+
+    -fx-border-radius:16;
+
+    -fx-border-color:
+            rgba(255,255,255,0.08);
+}
+
+.section-title{
+
+    -fx-text-fill:#d8d8d8;
+    -fx-font-size:14;
+    -fx-font-weight:bold;
+}
+
+.selector-box{
+
+    -fx-background-color:#3b3b3b;
+
+    -fx-background-radius:8;
+}
+
+.selector-active{
+
+    -fx-background-color:#e9c349;
+
+    -fx-text-fill:#3a2e00;
+
+    -fx-font-weight:bold;
+}
+
+.selector-button{
+
+    -fx-background-color:transparent;
+
+    -fx-text-fill:#c7c7c7;
+}
+
+.play-button{
+
+    -fx-background-color:#e9c349;
+
+    -fx-text-fill:#3a2e00;
+
+    -fx-font-size:18;
+
+    -fx-font-weight:bold;
+
+    -fx-background-radius:8;
+
+    -fx-pref-width:250;
+
+    -fx-pref-height:45;
+}
+
+.play-button:hover{
+
+    -fx-scale-x:1.03;
+    -fx-scale-y:1.03;
+}
+
+.exit-button{
+
+    -fx-background-color:transparent;
+
+    -fx-border-color:#9d8b34;
+
+    -fx-border-radius:8;
+
+    -fx-text-fill:#d9c46f;
+
+    -fx-pref-width:250;
+
+    -fx-pref-height:40;
+}
+
+.decor-card{
+
+    -fx-background-color:
+            linear-gradient(
+                    to bottom,
+                    #0f0f0f,
+                    #202020
+            );
+
+    -fx-background-radius:10;
+
+    -fx-border-radius:10;
+
+    -fx-border-color:
+            rgba(255,255,255,0.2);
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0,0,0,0.6),
+                    15,
+                    0,
+                    0,
+                    6
+            );
+}

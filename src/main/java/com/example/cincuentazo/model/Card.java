@@ -120,7 +120,7 @@ public class Card {
 
         return switch (rank) {
 
-            case ACE -> 1;
+            case ACE -> 1 | 10;
 
             case TWO -> 2;
 
@@ -136,9 +136,11 @@ public class Card {
 
             case EIGHT -> 8;
 
-            case NINE -> 9;
+            case NINE -> 0;
 
-            case TEN, JACK, QUEEN, KING -> 10;
+            case TEN-> 10;
+
+            case JACK, QUEEN, KING -> -10;
         };
     }
 
@@ -180,5 +182,16 @@ public class Card {
     @Override
     public int hashCode() {
         return Objects.hash(suit, rank);
+    }
+
+    /**
+     * Checks if this card can be played.
+     *
+     * @param currentSum current accumulated value
+     * @return true if the card can be played
+     */
+    public boolean canBePlayed(int currentSum) {
+
+        return currentSum + getValue() <= 50;
     }
 }

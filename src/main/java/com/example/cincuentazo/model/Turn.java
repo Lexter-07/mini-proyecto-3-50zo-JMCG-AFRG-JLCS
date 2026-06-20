@@ -66,6 +66,32 @@ public enum Turn {
     }
 
     /**
+     * Returns the player index associated with the turn.
+     *
+     * <pre>
+     * HUMAN     -> 0
+     * MACHINE_1 -> 1
+     * MACHINE_2 -> 2
+     * MACHINE_3 -> 3
+     * </pre>
+     *
+     * @return player index
+     */
+    public int getPlayerIndex() {
+
+        return switch (this) {
+
+            case HUMAN -> 0;
+
+            case MACHINE_1 -> 1;
+
+            case MACHINE_2 -> 2;
+
+            case MACHINE_3 -> 3;
+        };
+    }
+
+    /**
      * Returns whether the current turn belongs to the human player.
      *
      * @return {@code true} if it is the human player's turn

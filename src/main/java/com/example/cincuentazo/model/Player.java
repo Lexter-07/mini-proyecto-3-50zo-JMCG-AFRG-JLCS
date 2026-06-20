@@ -37,6 +37,11 @@ public class Player {
     private final List<Card> hand;
 
     /**
+     * Indicates whether the player has been eliminated.
+     */
+    private boolean eliminated;
+
+    /**
      * Creates a new player.
      *
      * @param name player's name
@@ -47,6 +52,7 @@ public class Player {
         this.name = name;
         this.cpu = cpu;
         this.hand = new ArrayList<>();
+        this.eliminated = false;
     }
 
     /**
@@ -65,6 +71,24 @@ public class Player {
      */
     public boolean isCpu() {
         return cpu;
+    }
+
+    /**
+     * Checks if the player has at least one playable card.
+     *
+     * @param currentSum current accumulated value
+     * @return true if a card can be played
+     */
+    public boolean hasPlayableCard(int currentSum) {
+
+        for (Card card : hand) {
+
+            if (card.canBePlayed(currentSum)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -129,6 +153,24 @@ public class Player {
     @Override
     public String toString() {
         return name + " (" + (cpu ? "CPU" : "Human") + ")";
+    }
+
+    /**
+     * Returns whether the player has been eliminated.
+     *
+     * @return true if eliminated
+     */
+    public boolean isEliminated() {
+        return eliminated;
+    }
+
+    /**
+     * Sets the elimination state.
+     *
+     * @param eliminated elimination state
+     */
+    public void setEliminated(boolean eliminated) {
+        this.eliminated = eliminated;
     }
 
 }
