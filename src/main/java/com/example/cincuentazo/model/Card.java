@@ -1,12 +1,14 @@
 package com.example.cincuentazo.model;
 
+import com.example.cincuentazo.model.intefaces.ICard;
+
 /**
  * Represents a playing card with a specific suit and rank.
  * Automatically generates its resource image path based on its properties.
  * * @author AndresF395
  * @version 1.0
  */
-public class Card {
+public class Card implements ICard {
 
     private final Suit suit;
     private final int rank; // 1 (Ace) to 13 (King)

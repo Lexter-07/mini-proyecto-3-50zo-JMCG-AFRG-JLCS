@@ -1,6 +1,8 @@
 package com.example.cincuentazo.model;
 
 import com.example.cincuentazo.exceptions.*;
+import com.example.cincuentazo.model.intefaces.IGameModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,7 @@ import java.util.List;
  * * @author AndresF395
  * @version 1.0
  */
-public class GameModel {
+public class GameModel implements IGameModel {
 
     private final Deck deck;
     private final List<Card> tablePile;

@@ -1,5 +1,7 @@
 package com.example.cincuentazo.model;
 
+import com.example.cincuentazo.model.intefaces.IPlayer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,7 @@ import java.util.List;
  * * @author Senior MVC Architect
  * @version 1.0
  */
-public class Player {
+public class Player implements IPlayer {
 
     private final String name;
     private final boolean isHuman;

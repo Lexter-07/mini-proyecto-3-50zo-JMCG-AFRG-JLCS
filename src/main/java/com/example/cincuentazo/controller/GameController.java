@@ -4,6 +4,7 @@ import com.example.cincuentazo.exceptions.InvalidMoveException;
 import com.example.cincuentazo.model.Card;
 import com.example.cincuentazo.model.GameModel;
 import com.example.cincuentazo.model.Player;
+import com.example.cincuentazo.model.ia.IAPlayer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -53,6 +54,9 @@ public class GameController {
 
     private GameModel gameModel;
     private int selectedHandIndex = -1;
+    private IAPlayer ia = new IAPlayer(IAPlayer.Difficulty.HARD);
+    private volatile boolean humanPlayed = false;
+    private List<IAPlayer> aiPlayers;
 
     @FXML
     public void initialize() {
@@ -75,7 +79,7 @@ public class GameController {
                 tablePane.requestFocus();
             }
         });
-        System.out.println("[TEST] GameController vinculado correctamente a tu UI sin errores.");
+        System.out.println("[TEST] GameController vinculado correctamente a UI sin errores.");
     }
 
     private void setupCardInteractionEvents() {
@@ -145,32 +149,35 @@ public class GameController {
 
     private void handleAutomatedTurnPass() {
         Player current = gameModel.getTurnSystem().getCurrentPlayer();
+
         if (!current.isHuman() && !gameModel.getTurnSystem().checkVictoryCondition()) {
-            System.out.println("[TEST] Turno automático de: " + current.getName());
 
-            Card safeChoice = null;
-            for (Card card : current.getHand()) {
-                if (com.example.cincuentazo.model.GameRules.isValidMove(card, gameModel.getTableSum())) {
-                    safeChoice = card;
-                    break;
-                }
-            }
+            System.out.println("[IA] Turno de: " + current.getName());
 
-            if (safeChoice != null) {
+            Card choice = ia.chooseCard(current, gameModel.getTableSum());
+
+            if (choice != null) {
                 try {
-                    gameModel.playTurnAction(current, safeChoice);
+                    gameModel.playTurnAction(current, choice);
+
                     if (historyList != null) {
-                        historyList.getItems().add(0, current.getName() + " jugó " + safeChoice + " | Suma: " + gameModel.getTableSum());
+                        historyList.getItems().add(0,
+                                current.getName() + " jugó " + choice +
+                                        " | Suma: " + gameModel.getTableSum());
                     }
+
                     gameModel.getTurnSystem().advanceTurn();
+
                 } catch (InvalidMoveException ignored) {}
             } else {
                 gameModel.eliminatePlayer(current);
                 gameModel.getTurnSystem().advanceTurn();
+
                 if (historyList != null) {
                     historyList.getItems().add(0, current.getName() + " fue ELIMINADO!");
                 }
             }
+
             refreshGraphicInterface();
         }
     }

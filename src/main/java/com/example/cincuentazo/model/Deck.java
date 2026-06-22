@@ -1,6 +1,8 @@
 package com.example.cincuentazo.model;
 
 import com.example.cincuentazo.exceptions.EmptyDeckException;
+import com.example.cincuentazo.model.intefaces.IDeck;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
@@ -11,7 +13,7 @@ import java.util.Stack;
  * * @author AndresF395
  * @version 1.0
  */
-public class Deck {
+public class Deck implements IDeck {
 
     private final Stack<Card> drawPile;
 
