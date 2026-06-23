@@ -4,12 +4,16 @@ import com.example.cincuentazo.exceptions.InvalidMoveException;
 import com.example.cincuentazo.model.Card;
 import com.example.cincuentazo.model.GameModel;
 import com.example.cincuentazo.model.Player;
-import com.example.cincuentazo.model.ia.IAPlayer;
 import com.example.cincuentazo.config.GameSettings;
+import com.example.cincuentazo.model.threads.TimeThread;
+import com.example.cincuentazo.model.Translation;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -21,18 +25,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * Controller strictly mapped to the custom user UI structure.
- * Automatically handles events without modifying the original FXML.
+ * Relies on external services (Translation, TimeThread) for higher cohesion.
+ * @author Andrés Felipe Rodríguez García
+ * @version 2.1
  */
 public class GameController {
 
-    // ==== INYECCIONES EXACTAS DE TU FXML ====
     @FXML private AnchorPane tablePane;
-
     @FXML private Label sumLabel;
     @FXML private Label roundLabel;
     @FXML private Label timeLabel;
@@ -52,105 +57,66 @@ public class GameController {
     @FXML private ImageView cardImage3;
     @FXML private ImageView cardImage4;
 
-    @FXML
-    private VBox machine1Box;
+    @FXML private Button playCardButton;
 
-    @FXML
-    private VBox machine2Box;
-
-    @FXML
-    private VBox machine3Box;
-
-    @FXML private Button playCardButton; // El gran botón de jugar carta en tu FXML
+    // === CONTENEDORES DE LAS MÁQUINAS PARA OCULTARLAS ===
+    @FXML private VBox machine1Box;
+    @FXML private VBox machine2Box;
+    @FXML private VBox machine3Box;
 
     private GameModel gameModel;
     private int selectedHandIndex = -1;
-    private IAPlayer ia = new IAPlayer(IAPlayer.Difficulty.HARD);
-    private volatile boolean humanPlayed = false;
-    private List<IAPlayer> aiPlayers;
+
+    // Concurrency controls
+    private volatile boolean isGameRunning = false;
+    private TimeThread timeThread; // <-- Externalizado
+    private Thread machineThread;
 
     @FXML
     public void initialize() {
-
-        System.out.println("[TEST] Inicializando GameController...");
-
-        configureVisibleMachines();
-
         setupCardInteractionEvents();
 
-        List<String> configurationNames = Arrays.asList(
-                "You (Human)",
-                "Máquina 1",
-                "Máquina 2",
-                "Máquina 3"
-        );
+        int machineCount = GameSettings.getMachineCount();
+
+        // Ocultar IAs no utilizadas visualmente
+        if (machine1Box != null) { machine1Box.setVisible(machineCount >= 1); machine1Box.setManaged(machineCount >= 1); }
+        if (machine2Box != null) { machine2Box.setVisible(machineCount >= 2); machine2Box.setManaged(machineCount >= 2); }
+        if (machine3Box != null) { machine3Box.setVisible(machineCount >= 3); machine3Box.setManaged(machineCount >= 3); }
+
+        List<String> configurationNames = new ArrayList<>();
+        configurationNames.add("Tú (Humano)");
+        for (int i = 1; i <= machineCount; i++) {
+            configurationNames.add("Máquina " + i);
+        }
 
         gameModel = new GameModel(configurationNames);
         gameModel.startNewGame();
 
-        if (timeLabel != null) {
-            timeLabel.setText("00:00");
-        }
+        if (roundLabel != null) roundLabel.setText("1");
 
-        if (roundLabel != null) {
-            roundLabel.setText("1");
-        }
+        isGameRunning = true;
 
+        // Iniciar Hilo de Tiempo Externo
+        timeThread = new TimeThread(timeLabel);
+        timeThread.start();
+
+        startMachineThread();
         refreshGraphicInterface();
 
         Platform.runLater(() -> {
-
             if (tablePane != null && tablePane.getScene() != null) {
-
-                tablePane.getScene().addEventHandler(
-                        KeyEvent.KEY_PRESSED,
-                        this::handleSystemKeyboardStroke
-                );
-
+                tablePane.getScene().addEventHandler(KeyEvent.KEY_PRESSED, this::handleSystemKeyboardStroke);
                 tablePane.requestFocus();
             }
         });
-
-        System.out.println("[TEST] GameController vinculado correctamente a UI sin errores.");
-    }
-
-    private void configureVisibleMachines() {
-
-        int machines = GameSettings.getMachineCount();
-
-        machine1Box.setVisible(false);
-        machine1Box.setManaged(false);
-
-        machine2Box.setVisible(false);
-        machine2Box.setManaged(false);
-
-        machine3Box.setVisible(false);
-        machine3Box.setManaged(false);
-
-        if (machines >= 1) {
-            machine1Box.setVisible(true);
-            machine1Box.setManaged(true);
-        }
-
-        if (machines >= 2) {
-            machine2Box.setVisible(true);
-            machine2Box.setManaged(true);
-        }
-
-        if (machines >= 3) {
-            machine3Box.setVisible(true);
-            machine3Box.setManaged(true);
-        }
     }
 
     private void setupCardInteractionEvents() {
-        System.out.println("[TEST] Vinculando botones...");
         if (cardButton1 != null) cardButton1.setOnMouseClicked(event -> highlightSelectedCard(0));
         if (cardButton2 != null) cardButton2.setOnMouseClicked(event -> highlightSelectedCard(1));
         if (cardButton3 != null) cardButton3.setOnMouseClicked(event -> highlightSelectedCard(2));
         if (cardButton4 != null) cardButton4.setOnMouseClicked(event -> highlightSelectedCard(3));
 
-        // Vincular tu botón principal del FXML
         if (playCardButton != null) {
             playCardButton.setOnAction(event -> processHumanMoveConfirmation());
         }
@@ -158,8 +124,6 @@ public class GameController {
 
     private void highlightSelectedCard(int handIndex) {
         selectedHandIndex = handIndex;
-        System.out.println("[TEST] Carta seleccionada en el índice: " + handIndex);
-
         List<Button> buttons = Arrays.asList(cardButton1, cardButton2, cardButton3, cardButton4);
         for (int i = 0; i < buttons.size(); i++) {
             if (buttons.get(i) != null) {
@@ -172,8 +136,7 @@ public class GameController {
     }
 
     private void handleSystemKeyboardStroke(KeyEvent event) {
-        KeyCode code = event.getCode();
-        if (code == KeyCode.SPACE) {
+        if (event.getCode() == KeyCode.SPACE) {
             event.consume();
             processHumanMoveConfirmation();
         }
@@ -181,6 +144,7 @@ public class GameController {
 
     private void processHumanMoveConfirmation() {
         Player human = gameModel.getPlayers().get(0);
+        if (gameModel.getTurnSystem().getCurrentPlayer() != human) return;
         if (selectedHandIndex < 0 || selectedHandIndex >= human.getHand().size()) {
             displayStatusNotification("Falta Selección", "Selecciona una carta haciendo clic antes de jugar.");
             return;
@@ -188,81 +152,118 @@ public class GameController {
 
         Card choice = human.getHand().get(selectedHandIndex);
         try {
-            System.out.println("[TEST] Intento de jugar la carta: " + choice.toString());
             gameModel.playTurnAction(human, choice);
 
+            // USO DE CLASE EXTERNA DE TRADUCCIÓN
             if (historyList != null) {
-                historyList.getItems().add(0, "Jugaste: " + choice + " | Suma: " + gameModel.getTableSum());
+                historyList.getItems().add(0, "Jugaste: " + Translation.generateSpanishCardName(choice) + " | Suma: " + gameModel.getTableSum());
             }
 
             selectedHandIndex = -1;
             gameModel.getTurnSystem().advanceTurn();
             refreshGraphicInterface();
-
-            // Simular turno de máquina simple
-            handleAutomatedTurnPass();
+            checkMatchTermination();
 
         } catch (InvalidMoveException e) {
-            System.out.println("[TEST ERROR] Movimiento inválido, supera 50.");
             displayStatusNotification("Jugada Ilegal", "Esta carta supera los 50 puntos. Intenta con otra.");
         }
     }
 
-    private void handleAutomatedTurnPass() {
-        Player current = gameModel.getTurnSystem().getCurrentPlayer();
-
-        if (!current.isHuman() && !gameModel.getTurnSystem().checkVictoryCondition()) {
-
-            System.out.println("[IA] Turno de: " + current.getName());
-
-            Card choice = ia.chooseCard(current, gameModel.getTableSum());
-
-            if (choice != null) {
+    private void startMachineThread() {
+        machineThread = new Thread(() -> {
+            while (isGameRunning) {
                 try {
-                    gameModel.playTurnAction(current, choice);
+                    Thread.sleep(1000);
+                    if (!isGameRunning) break;
 
-                    if (historyList != null) {
-                        historyList.getItems().add(0,
-                                current.getName() + " jugó " + choice +
-                                        " | Suma: " + gameModel.getTableSum());
+                    Player current = gameModel.getTurnSystem().getCurrentPlayer();
+                    if (!current.isHuman() && !current.isEliminated()) {
+
+                        Thread.sleep(2000 + (long)(Math.random() * 2000));
+                        if (!isGameRunning) break;
+
+                        Platform.runLater(() -> handleAutomatedTurnPass(current));
+                        Thread.sleep(1000 + (long)(Math.random() * 1000));
                     }
-
-                    gameModel.getTurnSystem().advanceTurn();
-
-                } catch (InvalidMoveException ignored) {}
-            } else {
-                gameModel.eliminatePlayer(current);
-                gameModel.getTurnSystem().advanceTurn();
-
-                if (historyList != null) {
-                    historyList.getItems().add(0, current.getName() + " fue ELIMINADO!");
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
                 }
             }
+        });
+        machineThread.setDaemon(true);
+        machineThread.start();
+    }
 
-            refreshGraphicInterface();
+    private void handleAutomatedTurnPass(Player current) {
+        if (!isGameRunning || gameModel.getTurnSystem().checkVictoryCondition()) return;
+
+        Card safeChoice = null;
+        for (Card card : current.getHand()) {
+            if (com.example.cincuentazo.model.GameRules.isValidMove(card, gameModel.getTableSum())) {
+                safeChoice = card;
+                break;
+            }
         }
+
+        if (safeChoice != null) {
+            try {
+                gameModel.playTurnAction(current, safeChoice);
+                if (historyList != null) {
+                    // USO DE CLASE EXTERNA DE TRADUCCIÓN
+                    historyList.getItems().add(0, current.getName() + " jugó " + Translation.generateSpanishCardName(safeChoice));
+                }
+            } catch (InvalidMoveException ignored) {}
+        } else {
+            gameModel.eliminatePlayer(current);
+            if (historyList != null) {
+                historyList.getItems().add(0, current.getName() + " ELIMINADO.");
+            }
+        }
+
+        gameModel.getTurnSystem().advanceTurn();
+        refreshGraphicInterface();
+        checkMatchTermination();
     }
 
     private void refreshGraphicInterface() {
+        if (isGameRunning) {
+            Player currentTurnPlayer = gameModel.getTurnSystem().getCurrentPlayer();
+            if (currentTurnPlayer.isHuman() && !currentTurnPlayer.isEliminated()) {
+                boolean humanHasValidMoves = false;
+                for (Card c : currentTurnPlayer.getHand()) {
+                    if (com.example.cincuentazo.model.GameRules.isValidMove(c, gameModel.getTableSum())) {
+                        humanHasValidMoves = true;
+                        break;
+                    }
+                }
+
+                if (!humanHasValidMoves) {
+                    Platform.runLater(() -> {
+                        displayStatusNotification("¡Eliminado!", "No tienes cartas válidas. Quedas eliminado.");
+                        gameModel.eliminatePlayer(currentTurnPlayer);
+                        if (historyList != null) historyList.getItems().add(0, "Tú (Humano) fuiste ELIMINADO.");
+                        gameModel.getTurnSystem().advanceTurn();
+                        refreshGraphicInterface();
+                        checkMatchTermination();
+                    });
+                    return;
+                }
+            }
+        }
+
         Player human = gameModel.getPlayers().get(0);
         List<ImageView> views = Arrays.asList(cardImage1, cardImage2, cardImage3, cardImage4);
         List<Button> buttons = Arrays.asList(cardButton1, cardButton2, cardButton3, cardButton4);
 
-        // Actualizar cartas con CARGA SEGURA para evitar NullPointerException
         for (int i = 0; i < 4; i++) {
             if (i < human.getHand().size()) {
                 Card card = human.getHand().get(i);
                 try {
                     InputStream is = getClass().getResourceAsStream(card.getImagePath());
-                    if (is != null) {
-                        views.get(i).setImage(new Image(is));
-                    } else {
-                        System.err.println("[TEST ALERTA] Falta imagen física en tu PC: " + card.getImagePath());
-                        views.get(i).setImage(null);
-                    }
-                } catch (Exception e) {
-                    views.get(i).setImage(null);
-                }
+                    if (is != null) views.get(i).setImage(new Image(is));
+                    else views.get(i).setImage(null);
+                } catch (Exception e) { views.get(i).setImage(null); }
                 if (buttons.get(i) != null) buttons.get(i).setVisible(true);
             } else {
                 if (views.get(i) != null) views.get(i).setImage(null);
@@ -279,9 +280,54 @@ public class GameController {
             } catch (Exception e) { playedCardImage.setImage(null); }
         }
 
-        // Actualizar datos
         if (sumLabel != null) sumLabel.setText(String.valueOf(gameModel.getTableSum()));
         if (deckCountLabel != null) deckCountLabel.setText(String.valueOf(gameModel.getDeck().getRemainingCount()));
+    }
+
+    private void checkMatchTermination() {
+        if (gameModel.getTurnSystem().checkVictoryCondition() && isGameRunning) {
+            isGameRunning = false;
+
+            // Detener hilos usando referencias seguras
+            if (timeThread != null) timeThread.stopTimer();
+            if (machineThread != null) machineThread.interrupt();
+
+            Player winner = gameModel.getPlayers().stream().filter(p -> !p.isEliminated()).findFirst().orElse(null);
+            String winnerName = (winner != null) ? winner.getName() : "Nadie";
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Fin del Juego - Cincuentazo");
+            alert.setHeaderText("¡Juego Terminado!");
+            alert.setContentText("El ganador es: " + winnerName + ".\n¿Qué deseas hacer ahora?");
+
+            ButtonType btnPlayAgain = new ButtonType("Jugar otra ronda");
+            ButtonType btnExit = new ButtonType("Terminar juego", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(btnPlayAgain, btnExit);
+
+            alert.showAndWait().ifPresent(type -> {
+                if (type == btnPlayAgain) {
+                    restartGame();
+                } else {
+                    Platform.exit();
+                    System.exit(0);
+                }
+            });
+        }
+    }
+
+    private void restartGame() {
+        gameModel.startNewGame();
+        if (historyList != null) historyList.getItems().clear();
+        selectedHandIndex = -1;
+        isGameRunning = true;
+
+        // Re-iniciar Hilos
+        timeThread = new TimeThread(timeLabel);
+        timeThread.start();
+        startMachineThread();
+
+        refreshGraphicInterface();
     }
 
     private void displayStatusNotification(String title, String summary) {
