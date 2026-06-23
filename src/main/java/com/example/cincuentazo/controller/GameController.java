@@ -1,326 +1,233 @@
 package com.example.cincuentazo.controller;
 
+import com.example.cincuentazo.exceptions.InvalidMoveException;
 import com.example.cincuentazo.model.Card;
-import com.example.cincuentazo.model.Game;
+import com.example.cincuentazo.model.GameModel;
 import com.example.cincuentazo.model.Player;
-import com.example.cincuentazo.model.exceptions.EmptyDeckException;
-import com.example.cincuentazo.model.exceptions.InvalidCardPlayException;
-import com.example.cincuentazo.model.threads.TurnThread;
-
+import com.example.cincuentazo.model.ia.IAPlayer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Controller strictly mapped to the custom user UI structure.
+ * Automatically handles events without modifying the original FXML.
+ */
 public class GameController {
 
-    @FXML
-    private Button cardButton1;
+    // ==== INYECCIONES EXACTAS DE TU FXML ====
+    @FXML private AnchorPane tablePane;
 
-    @FXML
-    private Button cardButton2;
+    @FXML private Label sumLabel;
+    @FXML private Label roundLabel;
+    @FXML private Label timeLabel;
+    @FXML private Label deckCountLabel;
+    @FXML private ListView<String> historyList;
 
-    @FXML
-    private Button cardButton3;
+    @FXML private StackPane playedCardContainer;
+    @FXML private ImageView playedCardImage;
 
-    @FXML
-    private Button cardButton4;
+    @FXML private Button cardButton1;
+    @FXML private Button cardButton2;
+    @FXML private Button cardButton3;
+    @FXML private Button cardButton4;
 
-    @FXML
-    private ImageView cardImage1;
+    @FXML private ImageView cardImage1;
+    @FXML private ImageView cardImage2;
+    @FXML private ImageView cardImage3;
+    @FXML private ImageView cardImage4;
 
-    @FXML
-    private ImageView cardImage2;
+    @FXML private Button playCardButton; // El gran botón de jugar carta en tu FXML
 
-    @FXML
-    private ImageView cardImage3;
-
-    @FXML
-    private ImageView cardImage4;
-
-    @FXML
-    private ImageView playedCardImage;
-
-    @FXML
-    private Button playedCardButton;
-
-    @FXML
-    private Button playCardButton;
-
-    @FXML
-    private Label sumLabel;
-
-    @FXML
-    private Label deckCountLabel;
-
-    @FXML
-    private Label roundLabel;
-
-    @FXML
-    private Label timeLabel;
-
-    @FXML
-    private ListView<String> historyList;
-
-    private Game game;
-
-    private int selectedCardIndex = -1;
+    private GameModel gameModel;
+    private int selectedHandIndex = -1;
+    private IAPlayer ia = new IAPlayer(IAPlayer.Difficulty.HARD);
+    private volatile boolean humanPlayed = false;
+    private List<IAPlayer> aiPlayers;
 
     @FXML
     public void initialize() {
+        System.out.println("[TEST] Inicializando GameController...");
+        setupCardInteractionEvents();
 
-        try {
+        List<String> configurationNames = Arrays.asList("You (Human)", "Máquina 1", "Máquina 2", "Máquina 3");
+        gameModel = new GameModel(configurationNames);
+        gameModel.startNewGame();
 
-            game = new Game();
+        // Testing placeholders
+        if (timeLabel != null) timeLabel.setText("00:00");
+        if (roundLabel != null) roundLabel.setText("1");
 
-            configureCardEvents();
+        refreshGraphicInterface();
 
-            refreshUI();
-
-        } catch (Exception exception) {
-
-            exception.printStackTrace();
-        }
-    }
-
-    /**
-     * Configures all UI events.
-     */
-    private void configureCardEvents() {
-
-        cardButton1.setOnAction(event -> selectCard(0));
-
-        cardButton2.setOnAction(event -> selectCard(1));
-
-        cardButton3.setOnAction(event -> selectCard(2));
-
-        cardButton4.setOnAction(event -> selectCard(3));
-
-        playCardButton.setOnAction(event -> {
-            try {
-                playSelectedCard();
-            } catch (InvalidCardPlayException e) {
-                throw new RuntimeException(e);
-            } catch (EmptyDeckException e) {
-                throw new RuntimeException(e);
+        Platform.runLater(() -> {
+            if (tablePane != null && tablePane.getScene() != null) {
+                tablePane.getScene().addEventHandler(KeyEvent.KEY_PRESSED, this::handleSystemKeyboardStroke);
+                tablePane.requestFocus();
             }
         });
+        System.out.println("[TEST] GameController vinculado correctamente a UI sin errores.");
     }
 
-    /**
-     * Selects a card from the player's hand.
-     *
-     * @param index selected card index
-     */
-    private void selectCard(int index) {
+    private void setupCardInteractionEvents() {
+        System.out.println("[TEST] Vinculando botones...");
+        if (cardButton1 != null) cardButton1.setOnMouseClicked(event -> highlightSelectedCard(0));
+        if (cardButton2 != null) cardButton2.setOnMouseClicked(event -> highlightSelectedCard(1));
+        if (cardButton3 != null) cardButton3.setOnMouseClicked(event -> highlightSelectedCard(2));
+        if (cardButton4 != null) cardButton4.setOnMouseClicked(event -> highlightSelectedCard(3));
 
-        Player humanPlayer = game.getPlayer(0);
-
-        if (index >= humanPlayer.getHandSize()) {
-            return;
-        }
-
-        selectedCardIndex = index;
-
-        updateSelectionStyle();
-    }
-
-    /**
-     * Updates selected card visual state.
-     */
-    private void updateSelectionStyle() {
-
-        cardButton1.getStyleClass().remove("card-selected");
-        cardButton2.getStyleClass().remove("card-selected");
-        cardButton3.getStyleClass().remove("card-selected");
-        cardButton4.getStyleClass().remove("card-selected");
-
-        switch (selectedCardIndex) {
-
-            case 0 -> cardButton1.getStyleClass().add("card-selected");
-
-            case 1 -> cardButton2.getStyleClass().add("card-selected");
-
-            case 2 -> cardButton3.getStyleClass().add("card-selected");
-
-            case 3 -> cardButton4.getStyleClass().add("card-selected");
+        // Vincular tu botón principal del FXML
+        if (playCardButton != null) {
+            playCardButton.setOnAction(event -> processHumanMoveConfirmation());
         }
     }
 
-    /**
-     * Plays the selected card.
-     */
-    private void playSelectedCard() throws InvalidCardPlayException, EmptyDeckException {
+    private void highlightSelectedCard(int handIndex) {
+        selectedHandIndex = handIndex;
+        System.out.println("[TEST] Carta seleccionada en el índice: " + handIndex);
 
-        if (selectedCardIndex == -1) {
-            return;
-        }
-
-        Player humanPlayer = game.getPlayer(0);
-
-        if (selectedCardIndex >= humanPlayer.getHandSize()) {
-            return;
-        }
-
-        game.playCard(selectedCardIndex);
-
-        selectedCardIndex = -1;
-
-        refreshUI();
-
-        startMachineTurns();
-    }
-
-    /**
-     * Starts machine turns.
-     */
-    private void startMachineTurns() {
-
-        TurnThread turnThread = new TurnThread(
-                game,
-                () -> Platform.runLater(this::refreshUI)
-        );
-
-        turnThread.setDaemon(true);
-
-        turnThread.start();
-    }
-
-    /**
-     * Updates the whole interface.
-     */
-    private void refreshUI() {
-
-        updatePlayerHand();
-
-        updatePlayedCard();
-
-        updateLabels();
-
-        updateHistory();
-
-        updateSelectionStyle();
-    }
-
-    /**
-     * Updates player's hand images.
-     */
-    private void updatePlayerHand() {
-
-        Player humanPlayer = game.getPlayer(0);
-
-        ImageView[] cardImages = {
-                cardImage1,
-                cardImage2,
-                cardImage3,
-                cardImage4
-        };
-
-        for (int i = 0; i < cardImages.length; i++) {
-
-            if (i < humanPlayer.getHandSize()) {
-
-                Card card = humanPlayer.getHand().get(i);
-
-                try {
-
-                    Image image = new Image(
-                            getClass()
-                                    .getResourceAsStream(
-                                            card.getImagePath()
-                                    )
-                    );
-
-                    cardImages[i].setImage(image);
-
-                } catch (Exception exception) {
-
-                    cardImages[i].setImage(null);
-
-                    System.out.println(
-                            "Image not found: "
-                                    + card.getImagePath()
-                    );
+        List<Button> buttons = Arrays.asList(cardButton1, cardButton2, cardButton3, cardButton4);
+        for (int i = 0; i < buttons.size(); i++) {
+            if (buttons.get(i) != null) {
+                buttons.get(i).getStyleClass().remove("card-selected");
+                if (i == handIndex) {
+                    buttons.get(i).getStyleClass().add("card-selected");
                 }
-
-            } else {
-
-                cardImages[i].setImage(null);
             }
         }
     }
 
-    /**
-     * Updates the card currently played.
-     */
-    private void updatePlayedCard() {
+    private void handleSystemKeyboardStroke(KeyEvent event) {
+        KeyCode code = event.getCode();
+        if (code == KeyCode.SPACE) {
+            event.consume();
+            processHumanMoveConfirmation();
+        }
+    }
 
-        Card card = game.getLastPlayedCard();
-
-        if (card == null) {
-
-            playedCardImage.setImage(null);
-
+    private void processHumanMoveConfirmation() {
+        Player human = gameModel.getPlayers().get(0);
+        if (selectedHandIndex < 0 || selectedHandIndex >= human.getHand().size()) {
+            displayStatusNotification("Falta Selección", "Selecciona una carta haciendo clic antes de jugar.");
             return;
         }
 
+        Card choice = human.getHand().get(selectedHandIndex);
         try {
+            System.out.println("[TEST] Intento de jugar la carta: " + choice.toString());
+            gameModel.playTurnAction(human, choice);
 
-            Image image = new Image(
-                    getClass()
-                            .getResourceAsStream(
-                                    card.getImagePath()
-                            )
-            );
+            if (historyList != null) {
+                historyList.getItems().add(0, "Jugaste: " + choice + " | Suma: " + gameModel.getTableSum());
+            }
 
-            playedCardImage.setImage(image);
+            selectedHandIndex = -1;
+            gameModel.getTurnSystem().advanceTurn();
+            refreshGraphicInterface();
 
-        } catch (Exception exception) {
+            // Simular turno de máquina simple
+            handleAutomatedTurnPass();
 
-            playedCardImage.setImage(null);
-
-            System.out.println(
-                    "Played card image not found: "
-                            + card.getImagePath()
-            );
+        } catch (InvalidMoveException e) {
+            System.out.println("[TEST ERROR] Movimiento inválido, supera 50.");
+            displayStatusNotification("Jugada Ilegal", "Esta carta supera los 50 puntos. Intenta con otra.");
         }
     }
 
-    /**
-     * Updates labels.
-     */
-    private void updateLabels() {
+    private void handleAutomatedTurnPass() {
+        Player current = gameModel.getTurnSystem().getCurrentPlayer();
 
-        sumLabel.setText(
-                String.valueOf(
-                        game.getCurrentSum()
-                )
-        );
+        if (!current.isHuman() && !gameModel.getTurnSystem().checkVictoryCondition()) {
 
-        deckCountLabel.setText(
-                String.valueOf(
-                        game.getDeck().size()
-                )
-        );
+            System.out.println("[IA] Turno de: " + current.getName());
+
+            Card choice = ia.chooseCard(current, gameModel.getTableSum());
+
+            if (choice != null) {
+                try {
+                    gameModel.playTurnAction(current, choice);
+
+                    if (historyList != null) {
+                        historyList.getItems().add(0,
+                                current.getName() + " jugó " + choice +
+                                        " | Suma: " + gameModel.getTableSum());
+                    }
+
+                    gameModel.getTurnSystem().advanceTurn();
+
+                } catch (InvalidMoveException ignored) {}
+            } else {
+                gameModel.eliminatePlayer(current);
+                gameModel.getTurnSystem().advanceTurn();
+
+                if (historyList != null) {
+                    historyList.getItems().add(0, current.getName() + " fue ELIMINADO!");
+                }
+            }
+
+            refreshGraphicInterface();
+        }
     }
 
-    /**
-     * Updates history panel.
-     */
-    private void updateHistory() {
+    private void refreshGraphicInterface() {
+        Player human = gameModel.getPlayers().get(0);
+        List<ImageView> views = Arrays.asList(cardImage1, cardImage2, cardImage3, cardImage4);
+        List<Button> buttons = Arrays.asList(cardButton1, cardButton2, cardButton3, cardButton4);
 
-        historyList.getItems().setAll(
-                game.getHistory()
-        );
-
-        if (!historyList.getItems().isEmpty()) {
-
-            historyList.scrollTo(
-                    historyList.getItems().size() - 1
-            );
+        // Actualizar cartas con CARGA SEGURA para evitar NullPointerException
+        for (int i = 0; i < 4; i++) {
+            if (i < human.getHand().size()) {
+                Card card = human.getHand().get(i);
+                try {
+                    InputStream is = getClass().getResourceAsStream(card.getImagePath());
+                    if (is != null) {
+                        views.get(i).setImage(new Image(is));
+                    } else {
+                        System.err.println("[TEST ALERTA] Falta imagen física en tu PC: " + card.getImagePath());
+                        views.get(i).setImage(null);
+                    }
+                } catch (Exception e) {
+                    views.get(i).setImage(null);
+                }
+                if (buttons.get(i) != null) buttons.get(i).setVisible(true);
+            } else {
+                if (views.get(i) != null) views.get(i).setImage(null);
+                if (buttons.get(i) != null) buttons.get(i).setVisible(false);
+            }
+            if (buttons.get(i) != null) buttons.get(i).getStyleClass().remove("card-selected");
         }
+
+        Card activeTop = gameModel.getTopTableCard();
+        if (activeTop != null && playedCardImage != null) {
+            try {
+                InputStream is = getClass().getResourceAsStream(activeTop.getImagePath());
+                if (is != null) playedCardImage.setImage(new Image(is));
+            } catch (Exception e) { playedCardImage.setImage(null); }
+        }
+
+        // Actualizar datos
+        if (sumLabel != null) sumLabel.setText(String.valueOf(gameModel.getTableSum()));
+        if (deckCountLabel != null) deckCountLabel.setText(String.valueOf(gameModel.getDeck().getRemainingCount()));
+    }
+
+    private void displayStatusNotification(String title, String summary) {
+        Alert notification = new Alert(Alert.AlertType.INFORMATION);
+        notification.setTitle(title);
+        notification.setHeaderText(null);
+        notification.setContentText(summary);
+        notification.showAndWait();
     }
 }

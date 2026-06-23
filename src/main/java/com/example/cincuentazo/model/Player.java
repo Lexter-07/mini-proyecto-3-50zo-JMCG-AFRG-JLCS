@@ -1,176 +1,57 @@
 package com.example.cincuentazo.model;
 
+import com.example.cincuentazo.model.intefaces.IPlayer;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents a player in the Cincuentazo game.
- *
- * <p>A player has:
- * <ul>
- *     <li>A name.</li>
- *     <li>A hand of cards.</li>
- *     <li>A type (human or CPU).</li>
- * </ul>
- *
- * This class provides methods for managing the player's hand during the game.
- *
- * @author Jose Manuel Cardona Gil
+ * Domain entity model representing a player participating in the match.
+ * Holds their hand data, identification metrics, and active gameplay standing.
+ * * @author Senior MVC Architect
  * @version 1.0
  */
-public class Player {
+public class Player implements IPlayer {
 
-    /**
-     * Player's name.
-     */
     private final String name;
-
-    /**
-     * Indicates whether the player is controlled by the computer.
-     */
-    private final boolean cpu;
-
-    /**
-     * Cards currently held by the player.
-     */
+    private final boolean isHuman;
     private final List<Card> hand;
-
-    /**
-     * Indicates whether the player has been eliminated.
-     */
     private boolean eliminated;
 
-    /**
-     * Creates a new player.
-     *
-     * @param name player's name
-     * @param cpu true if the player is controlled by the computer
-     */
-    public Player(String name, boolean cpu) {
-
+    public Player(String name, boolean isHuman) {
         this.name = name;
-        this.cpu = cpu;
+        this.isHuman = isHuman;
         this.hand = new ArrayList<>();
         this.eliminated = false;
     }
 
-    /**
-     * Returns the player's name.
-     *
-     * @return player's name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Returns whether this player is controlled by the computer.
-     *
-     * @return true if this player is a CPU
-     */
-    public boolean isCpu() {
-        return cpu;
+    public boolean isHuman() {
+        return isHuman;
     }
 
-    /**
-     * Checks if the player has at least one playable card.
-     *
-     * @param currentSum current accumulated value
-     * @return true if a card can be played
-     */
-    public boolean hasPlayableCard(int currentSum) {
-
-        for (Card card : hand) {
-
-            if (card.canBePlayed(currentSum)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns an unmodifiable view of the player's hand.
-     *
-     * @return player's hand
-     */
     public List<Card> getHand() {
-        return Collections.unmodifiableList(hand);
+        return hand;
     }
 
-    /**
-     * Adds a card to the player's hand.
-     *
-     * @param card card to be added
-     */
-    public void addCard(Card card) {
-        hand.add(card);
-    }
-
-    /**
-     * Removes and returns the selected card from the player's hand.
-     *
-     * @param index position of the card
-     * @return removed card
-     * @throws IndexOutOfBoundsException if the index is invalid
-     */
-    public Card playCard(int index) {
-        return hand.remove(index);
-    }
-
-    /**
-     * Removes all cards from the player's hand.
-     */
-    public void clearHand() {
-        hand.clear();
-    }
-
-    /**
-     * Returns the number of cards currently in the player's hand.
-     *
-     * @return hand size
-     */
-    public int getHandSize() {
-        return hand.size();
-    }
-
-    /**
-     * Returns whether the player has any cards left.
-     *
-     * @return true if the hand is empty
-     */
-    public boolean hasNoCards() {
-        return hand.isEmpty();
-    }
-
-    /**
-     * Returns a string representation of the player.
-     *
-     * @return player's information
-     */
-    @Override
-    public String toString() {
-        return name + " (" + (cpu ? "CPU" : "Human") + ")";
-    }
-
-    /**
-     * Returns whether the player has been eliminated.
-     *
-     * @return true if eliminated
-     */
     public boolean isEliminated() {
         return eliminated;
     }
 
-    /**
-     * Sets the elimination state.
-     *
-     * @param eliminated elimination state
-     */
     public void setEliminated(boolean eliminated) {
         this.eliminated = eliminated;
     }
 
+    public void addCardToHand(Card card) {
+        if (hand.size() < 4) {
+            hand.add(card);
+        }
+    }
+
+    public void removeCardFromHand(Card card) {
+        hand.remove(card);
+    }
 }

@@ -1,112 +1,51 @@
 package com.example.cincuentazo.model;
 
+import java.util.List;
+
 /**
- * Represents the turn order during a Cincuentazo match.
- *
- * <p>The game consists of four participants:
- * <ul>
- *     <li>The human player.</li>
- *     <li>Machine 1.</li>
- *     <li>Machine 2.</li>
- *     <li>Machine 3.</li>
- * </ul>
- *
- * <p>This enumeration also provides utility methods to
- * determine the next player's turn.
- *
- * @author Jose Manuel Cardona Gil
+ * Controls structural turn transitions and handles matching loop sequences.
+ * Skippable index points are calculated based on player elimination indices.
+ * * @author AndresF395
  * @version 1.0
  */
-public enum Turn {
+public class Turn {
 
-    /**
-     * Human player's turn.
-     */
-    HUMAN,
+    private int currentPlayerIndex;
+    private final List<Player> players;
 
-    /**
-     * First computer player's turn.
-     */
-    MACHINE_1,
-
-    /**
-     * Second computer player's turn.
-     */
-    MACHINE_2,
-
-    /**
-     * Third computer player's turn.
-     */
-    MACHINE_3;
-
-    /**
-     * Returns the next turn in the game sequence.
-     *
-     * <pre>
-     * HUMAN     → MACHINE_1
-     * MACHINE_1 → MACHINE_2
-     * MACHINE_2 → MACHINE_3
-     * MACHINE_3 → HUMAN
-     * </pre>
-     *
-     * @return the next turn
-     */
-    public Turn next() {
-
-        return switch (this) {
-
-            case HUMAN -> MACHINE_1;
-
-            case MACHINE_1 -> MACHINE_2;
-
-            case MACHINE_2 -> MACHINE_3;
-
-            case MACHINE_3 -> HUMAN;
-        };
+    public Turn(List<Player> players) {
+        this.players = players;
+        this.currentPlayerIndex = 0;
     }
 
     /**
-     * Returns the player index associated with the turn.
-     *
-     * <pre>
-     * HUMAN     -> 0
-     * MACHINE_1 -> 1
-     * MACHINE_2 -> 2
-     * MACHINE_3 -> 3
-     * </pre>
-     *
-     * @return player index
+     * Advances the pointer to the next active player inside the rotation pool.
+     * * @return the Player instance entitled to execute the upcoming move
      */
-    public int getPlayerIndex() {
+    public Player advanceTurn() {
+        int attempts = 0;
+        do {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            attempts++;
+        } while (players.get(currentPlayerIndex).isEliminated() && attempts <= players.size());
 
-        return switch (this) {
+        return getCurrentPlayer();
+    }
 
-            case HUMAN -> 0;
+    public Player getCurrentPlayer() {
+        return players.get(currentPlayerIndex);
+    }
 
-            case MACHINE_1 -> 1;
-
-            case MACHINE_2 -> 2;
-
-            case MACHINE_3 -> 3;
-        };
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
     }
 
     /**
-     * Returns whether the current turn belongs to the human player.
-     *
-     * @return {@code true} if it is the human player's turn
+     * Scans player metrics to establish if only a single survivor remains.
+     * * @return true if the game setup meets concluding conditions
      */
-    public boolean isHuman() {
-        return this == HUMAN;
+    public boolean checkVictoryCondition() {
+        long activeCount = players.stream().filter(p -> !p.isEliminated()).count();
+        return activeCount <= 1;
     }
-
-    /**
-     * Returns whether the current turn belongs to a computer player.
-     *
-     * @return {@code true} if it is a machine's turn
-     */
-    public boolean isMachine() {
-        return this != HUMAN;
-    }
-
 }

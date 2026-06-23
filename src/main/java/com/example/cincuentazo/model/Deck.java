@@ -1,200 +1,70 @@
 package com.example.cincuentazo.model;
 
-import com.example.cincuentazo.model.exceptions.EmptyDeckException;
+import com.example.cincuentazo.exceptions.EmptyDeckException;
+import com.example.cincuentazo.model.intefaces.IDeck;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 /**
- * Represents the deck used during a Cincuentazo match.
- *
- * <p>The deck is responsible for:
- * <ul>
- *     <li>Creating the 52 standard playing cards.</li>
- *     <li>Shuffling the cards.</li>
- *     <li>Drawing cards from the top of the deck.</li>
- *     <li>Keeping track of the remaining cards.</li>
- * </ul>
- *
- * The deck automatically generates all cards when it is created.
- *
- * @author Jose Manuel Cardona Gil
+ * Manages the draw deck pile using explicit Card objects.
+ * Supports initialization, shuffling, and explicit drawing.
+ * * @author AndresF395
  * @version 1.0
  */
-public class Deck {
+public class Deck implements IDeck {
+
+    private final Stack<Card> drawPile;
 
     /**
-     * List containing all remaining cards.
-     */
-    private final List<Card> cards;
-
-    /**
-     * Creates a new shuffled deck.
+     * Initializes an empty deck stack structure.
      */
     public Deck() {
-
-        cards = new ArrayList<>();
-
-        initializeDeck();
-
-        shuffle();
+        this.drawPile = new Stack<>();
     }
 
     /**
-     * Generates the 52 cards of a standard deck.
+     * Generates a standard deck of 52 cards (4 suits, 13 ranks each).
      */
-    private void initializeDeck() {
-
-        for (Card.Suit suit : Card.Suit.values()) {
-
-            for (Card.Rank rank : Card.Rank.values()) {
-
-                cards.add(new Card(
-                        suit,
-                        rank,
-                        buildImagePath(suit, rank)
-                ));
+    public void generateDeck() {
+        drawPile.clear();
+        for (Suit suit : Suit.values()) {
+            for (int rank = 1; rank <= 13; rank++) {
+                drawPile.push(new Card(suit, rank));
             }
         }
     }
 
     /**
-     * Builds the image path of a card.
-     *
-     * Example:
-     * /com/example/cincuentazo/CARDS_PNG/HEARTS-01.png
-     *
-     * @param suit card suit
-     * @param rank card rank
-     * @return image path
+     * Shuffles the current cards remaining in the draw pile.
      */
-    private String buildImagePath(Card.Suit suit, Card.Rank rank) {
-
-        return "/com/example/cincuentazo/CARDS_PNG/"
-                + suit.name()
-                + "-"
-                + String.format("%02d", getRankNumber(rank))
-                + ".png";
+    public void shuffleDeck() {
+        Collections.shuffle(drawPile);
     }
 
     /**
-     * Converts a rank into its numerical representation
-     * used by the image names.
-     *
-     * ACE = 1
-     * TWO = 2
-     * ...
-     * KING = 13
-     *
-     * @param rank card rank
-     * @return numerical value from 1 to 13
-     */
-    private int getRankNumber(Card.Rank rank) {
-
-        return switch (rank) {
-
-            case ACE -> 1;
-
-            case TWO -> 2;
-
-            case THREE -> 3;
-
-            case FOUR -> 4;
-
-            case FIVE -> 5;
-
-            case SIX -> 6;
-
-            case SEVEN -> 7;
-
-            case EIGHT -> 8;
-
-            case NINE -> 9;
-
-            case TEN -> 10;
-
-            case JACK -> 11;
-
-            case QUEEN -> 12;
-
-            case KING -> 13;
-        };
-    }
-
-    /**
-     * Randomly shuffles the deck.
-     */
-    public void shuffle() {
-        Collections.shuffle(cards);
-    }
-
-    /**
-     * Removes and returns the top card of the deck.
-     *
-     * @return the first card of the deck
-     * @throws IllegalStateException if the deck is empty
+     * Draws the top card from the deck pile.
+     * * @return the drawn Card object
+     * @throws EmptyDeckException if no cards are available to draw
      */
     public Card drawCard() throws EmptyDeckException {
-
-        if(cards.isEmpty()){
-
-            throw new EmptyDeckException(
-                    "The deck is empty."
-            );
+        if (drawPile.isEmpty()) {
+            throw new EmptyDeckException("The draw pile is completely empty.");
         }
-
-        return cards.remove(0);
+        return drawPile.pop();
     }
 
     /**
-     * Returns whether the deck still contains cards.
-     *
-     * @return true if the deck is empty
+     * Restores the deck using discarded table cards during recycling.
+     * * @param recycledCards list of cards recovered from the table pile
      */
-    public boolean isEmpty() {
-        return cards.isEmpty();
+    public void recycleDiscardPile(List<Card> recycledCards) {
+        Collections.shuffle(recycledCards);
+        drawPile.addAll(recycledCards);
     }
 
-    /**
-     * Returns the number of remaining cards.
-     *
-     * @return remaining cards
-     */
-    public int size() {
-        return cards.size();
-    }
-
-    /**
-     * Returns a copy of the remaining cards.
-     *
-     * @return list of cards
-     */
-    public List<Card> getCards() {
-        return new ArrayList<>(cards);
-    }
-
-    /**
-     * Adds multiple cards to the deck.
-     *
-     * @param cards cards to add
-     */
-    public void addCards(List<Card> cards) {
-
-        this.cards.addAll(cards);
-
-        shuffle();
-    }
-
-    /**
-     * Restores the deck to its original state.
-     */
-    public void reset() {
-
-        cards.clear();
-
-        initializeDeck();
-
-        shuffle();
+    public int getRemainingCount() {
+        return drawPile.size();
     }
 }
