@@ -10,5 +10,7 @@ module com.example.cincuentazo {
     exports com.example.cincuentazo.model;
     exports com.example.cincuentazo.model.threads;
     opens com.example.cincuentazo.model.threads to javafx.fxml;
+    exports com.example.cincuentazo.model.intefaces;
+    opens com.example.cincuentazo.model.intefaces to javafx.fxml;
 
 }
