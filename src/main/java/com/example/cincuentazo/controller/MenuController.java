@@ -126,6 +126,8 @@ public class MenuController {
 
         System.out.println("Jugar contra " + selectedMachines + " máquina(s)");
 
+        GameSettings.setMachineCount(selectedMachines);
+        
         SceneManager.changeScene(Path.GameView);
     }
 
