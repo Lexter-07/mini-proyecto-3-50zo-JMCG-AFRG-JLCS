@@ -18,7 +18,8 @@ public class Main extends Application {
         new SceneManager(primaryStage);
 
         primaryStage.setOnCloseRequest(event -> {
-            event.consume(); // Cancela el cierre
+            Platform.exit(); 
+            System.exit(0);
         });
 
         SceneManager.changeScene(Path.MenuView);
