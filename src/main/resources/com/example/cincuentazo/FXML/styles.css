@@ -344,23 +344,27 @@
 
 }
 
-.card-selected{
+.card-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 0;
+}
 
-    -fx-border-color:#e9c349;
-
-    -fx-border-width:2;
-
-    -fx-border-radius:12;
-
-    -fx-effect:
-            dropshadow(
-                    gaussian,
-                    #d4af37,
-                    20,
-                    .40,
-                    0,
-                    0);
-
+.card-selected {
+    -fx-background-color: transparent;
+    -fx-border-color: #e9c349;
+    -fx-border-width: 3;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(
+            three-pass-box,
+            rgba(233,195,73,0.8),
+            15,
+            0,
+            0,
+            0
+    );
 }
 
 .played-card{

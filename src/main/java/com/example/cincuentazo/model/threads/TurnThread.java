@@ -42,6 +42,62 @@ public class TurnThread extends Thread {
         this.turnTimeSeconds = turnTimeSeconds;
     }
 
+import java.util.Random;
+
+/**
+ * Controls automatic machine turns.
+ *
+ * <p>This thread waits a short period of time between turns
+ * and makes the machine players play automatically.
+ *
+ * The thread stops once the turn returns to the human player
+ * or when the game reaches its end condition.
+ *
+ * This class contains no JavaFX code.
+ *
+ * @author Jose Manuel Cardona Gil
+ * @version 1.0
+ */
+public class TurnThread extends Thread {
+
+    /**
+     * Current game.
+     */
+    private final Game game;
+
+    /**
+     * Callback executed after every machine move.
+     */
+    private final Runnable onUpdate;
+
+    /**
+     * Random number generator.
+     */
+    private final Random random;
+
+    /**
+     * Delay between machine turns.
+     */
+    private static final long TURN_DELAY = 1200;
+
+    /**
+     * Creates a new turn thread.
+     *
+     * @param game current game
+     * @param onUpdate callback used to refresh the UI
+     */
+    public TurnThread(Game game, Runnable onUpdate) {
+
+        this.game = game;
+
+        this.onUpdate = onUpdate;
+
+        this.random = new Random();
+    }
+
+    /**
+     * Executes machine turns.
+     */
     @Override
     public void run() {
 
