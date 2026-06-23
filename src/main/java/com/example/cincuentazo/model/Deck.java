@@ -1,33 +1,70 @@
 package com.example.cincuentazo.model;
 
+import com.example.cincuentazo.exceptions.EmptyDeckException;
+import com.example.cincuentazo.model.intefaces.IDeck;
+
 import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 
-public class Deck {
+/**
+ * Manages the draw deck pile using explicit Card objects.
+ * Supports initialization, shuffling, and explicit drawing.
+ * * @author AndresF395
+ * @version 1.0
+ */
+public class Deck implements IDeck {
 
-    private String[] cards;
-    public Stack<String> deck = new Stack<>();
+    private final Stack<Card> drawPile;
 
-    public Deck(){
-        deck = new Stack<>();
-
-        cards = new String[]{"AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC",
-                "AD", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "10D", "JD", "QD", "KD",
-                "AS", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS", "KS",
-                "AH", "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "10H", "JH", "QH", "KH"
-        };
+    /**
+     * Initializes an empty deck stack structure.
+     */
+    public Deck() {
+        this.drawPile = new Stack<>();
     }
 
-
-    public void generateDeck(){
-        for (String card : cards) {
-            deck.push(card);
+    /**
+     * Generates a standard deck of 52 cards (4 suits, 13 ranks each).
+     */
+    public void generateDeck() {
+        drawPile.clear();
+        for (Suit suit : Suit.values()) {
+            for (int rank = 1; rank <= 13; rank++) {
+                drawPile.push(new Card(suit, rank));
+            }
         }
     }
 
-    public void shuffleDeck(){
-        Collections.shuffle(deck);
-        System.out.print(deck);
+    /**
+     * Shuffles the current cards remaining in the draw pile.
+     */
+    public void shuffleDeck() {
+        Collections.shuffle(drawPile);
     }
 
+    /**
+     * Draws the top card from the deck pile.
+     * * @return the drawn Card object
+     * @throws EmptyDeckException if no cards are available to draw
+     */
+    public Card drawCard() throws EmptyDeckException {
+        if (drawPile.isEmpty()) {
+            throw new EmptyDeckException("The draw pile is completely empty.");
+        }
+        return drawPile.pop();
+    }
+
+    /**
+     * Restores the deck using discarded table cards during recycling.
+     * * @param recycledCards list of cards recovered from the table pile
+     */
+    public void recycleDiscardPile(List<Card> recycledCards) {
+        Collections.shuffle(recycledCards);
+        drawPile.addAll(recycledCards);
+    }
+
+    public int getRemainingCount() {
+        return drawPile.size();
+    }
 }

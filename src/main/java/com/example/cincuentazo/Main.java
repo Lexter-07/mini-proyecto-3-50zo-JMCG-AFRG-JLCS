@@ -17,7 +17,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         new SceneManager(primaryStage);
 
-        SceneManager.changeScene(Path.menuView);
+        SceneManager.changeScene(Path.MenuView);
         primaryStage.setTitle("50zo");
     }
 }
