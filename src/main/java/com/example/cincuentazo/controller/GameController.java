@@ -5,6 +5,7 @@ import com.example.cincuentazo.model.Card;
 import com.example.cincuentazo.model.GameModel;
 import com.example.cincuentazo.model.Player;
 import com.example.cincuentazo.model.ia.IAPlayer;
+import com.example.cincuentazo.config.GameSettings;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -17,6 +18,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -50,6 +52,15 @@ public class GameController {
     @FXML private ImageView cardImage3;
     @FXML private ImageView cardImage4;
 
+    @FXML
+    private VBox machine1Box;
+
+    @FXML
+    private VBox machine2Box;
+
+    @FXML
+    private VBox machine3Box;
+
     @FXML private Button playCardButton; // El gran botón de jugar carta en tu FXML
 
     private GameModel gameModel;
@@ -60,26 +71,76 @@ public class GameController {
 
     @FXML
     public void initialize() {
+
         System.out.println("[TEST] Inicializando GameController...");
+
+        configureVisibleMachines();
+
         setupCardInteractionEvents();
 
-        List<String> configurationNames = Arrays.asList("You (Human)", "Máquina 1", "Máquina 2", "Máquina 3");
+        List<String> configurationNames = Arrays.asList(
+                "You (Human)",
+                "Máquina 1",
+                "Máquina 2",
+                "Máquina 3"
+        );
+
         gameModel = new GameModel(configurationNames);
         gameModel.startNewGame();
 
-        // Testing placeholders
-        if (timeLabel != null) timeLabel.setText("00:00");
-        if (roundLabel != null) roundLabel.setText("1");
+        if (timeLabel != null) {
+            timeLabel.setText("00:00");
+        }
+
+        if (roundLabel != null) {
+            roundLabel.setText("1");
+        }
 
         refreshGraphicInterface();
 
         Platform.runLater(() -> {
+
             if (tablePane != null && tablePane.getScene() != null) {
-                tablePane.getScene().addEventHandler(KeyEvent.KEY_PRESSED, this::handleSystemKeyboardStroke);
+
+                tablePane.getScene().addEventHandler(
+                        KeyEvent.KEY_PRESSED,
+                        this::handleSystemKeyboardStroke
+                );
+
                 tablePane.requestFocus();
             }
         });
+
         System.out.println("[TEST] GameController vinculado correctamente a UI sin errores.");
+    }
+
+    private void configureVisibleMachines() {
+
+        int machines = GameSettings.getMachineCount();
+
+        machine1Box.setVisible(false);
+        machine1Box.setManaged(false);
+
+        machine2Box.setVisible(false);
+        machine2Box.setManaged(false);
+
+        machine3Box.setVisible(false);
+        machine3Box.setManaged(false);
+
+        if (machines >= 1) {
+            machine1Box.setVisible(true);
+            machine1Box.setManaged(true);
+        }
+
+        if (machines >= 2) {
+            machine2Box.setVisible(true);
+            machine2Box.setManaged(true);
+        }
+
+        if (machines >= 3) {
+            machine3Box.setVisible(true);
+            machine3Box.setManaged(true);
+        }
     }
 
     private void setupCardInteractionEvents() {

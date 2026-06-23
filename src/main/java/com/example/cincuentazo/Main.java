@@ -17,6 +17,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         new SceneManager(primaryStage);
 
+        primaryStage.setOnCloseRequest(event -> {
+            event.consume(); // Cancela el cierre
+        });
+
         SceneManager.changeScene(Path.MenuView);
         primaryStage.setTitle("50zo");
     }
