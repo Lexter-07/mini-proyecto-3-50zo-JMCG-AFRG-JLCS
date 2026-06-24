@@ -3,6 +3,7 @@ package com.example.cincuentazo;
 import com.example.cincuentazo.view.Path;
 import com.example.cincuentazo.view.SceneManager;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class Main extends Application {
         new SceneManager(primaryStage);
 
         primaryStage.setOnCloseRequest(event -> {
-            Platform.exit(); 
+            Platform.exit();
             System.exit(0);
         });
 

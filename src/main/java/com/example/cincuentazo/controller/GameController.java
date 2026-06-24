@@ -8,7 +8,10 @@ import com.example.cincuentazo.config.GameSettings;
 import com.example.cincuentazo.model.threads.TimeThread;
 import com.example.cincuentazo.model.Translation;
 
+import com.example.cincuentazo.view.Path;
+import com.example.cincuentazo.view.SceneManager;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -21,9 +24,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +64,13 @@ public class GameController {
 
     @FXML private Button playCardButton;
 
+    @FXML private HBox turnBadge;
+    @FXML private Label turnLabel;
+
+    @FXML private Button pauseButton;
+
+    @FXML private VBox pauseOverlay;
+
     // === CONTENEDORES DE LAS MÁQUINAS PARA OCULTARLAS ===
     @FXML private VBox machine1Box;
     @FXML private VBox machine2Box;
@@ -66,15 +78,19 @@ public class GameController {
 
     private GameModel gameModel;
     private int selectedHandIndex = -1;
+    private List<String> configurationNames;
 
     // Concurrency controls
     private volatile boolean isGameRunning = false;
     private TimeThread timeThread; // <-- Externalizado
     private Thread machineThread;
+    private boolean gamePaused = false;
 
     @FXML
     public void initialize() {
         setupCardInteractionEvents();
+
+        pauseButton.setOnAction(event -> togglePauseMenu());
 
         int machineCount = GameSettings.getMachineCount();
 
@@ -83,7 +99,7 @@ public class GameController {
         if (machine2Box != null) { machine2Box.setVisible(machineCount >= 2); machine2Box.setManaged(machineCount >= 2); }
         if (machine3Box != null) { machine3Box.setVisible(machineCount >= 3); machine3Box.setManaged(machineCount >= 3); }
 
-        List<String> configurationNames = new ArrayList<>();
+        configurationNames = new ArrayList<>();
         configurationNames.add("Tú (Humano)");
         for (int i = 1; i <= machineCount; i++) {
             configurationNames.add("Máquina " + i);
@@ -99,6 +115,7 @@ public class GameController {
         // Iniciar Hilo de Tiempo Externo
         timeThread = new TimeThread(timeLabel);
         timeThread.start();
+
 
         startMachineThread();
         refreshGraphicInterface();
@@ -282,6 +299,7 @@ public class GameController {
 
         if (sumLabel != null) sumLabel.setText(String.valueOf(gameModel.getTableSum()));
         if (deckCountLabel != null) deckCountLabel.setText(String.valueOf(gameModel.getDeck().getRemainingCount()));
+        updateTurnIndicator();
     }
 
     private void checkMatchTermination() {
@@ -336,5 +354,112 @@ public class GameController {
         notification.setHeaderText(null);
         notification.setContentText(summary);
         notification.showAndWait();
+    }
+
+    /**
+     * Updates the visual turn indicator and enables/disables
+     * the human controls depending on whose turn it is.
+     */
+    private void updateTurnIndicator() {
+
+        Player currentPlayer = gameModel.getTurnSystem().getCurrentPlayer();
+
+        boolean humanTurn = currentPlayer.isHuman();
+
+        // Badge
+        turnBadge.setOpacity(humanTurn ? 1.0 : 0.30);
+
+        // Text
+        if (humanTurn) {
+            turnLabel.setText("★ Tu turno");
+        } else {
+            turnLabel.setText("★ " + currentPlayer.getName());
+        }
+
+        // Main play button
+        playCardButton.setDisable(!humanTurn);
+
+        // Hand cards
+        cardButton1.setDisable(!humanTurn);
+        cardButton2.setDisable(!humanTurn);
+        cardButton3.setDisable(!humanTurn);
+        cardButton4.setDisable(!humanTurn);
+    }
+
+    private void togglePauseMenu() {
+
+        gamePaused = !gamePaused;
+
+        pauseOverlay.setVisible(gamePaused);
+        pauseOverlay.setManaged(gamePaused);
+
+        if (timeThread != null) {
+
+            if (gamePaused) {
+                timeThread.pauseTimer();
+            } else {
+                timeThread.resumeTimer();
+            }
+        }
+
+        playCardButton.setDisable(gamePaused);
+
+        cardButton1.setDisable(gamePaused);
+        cardButton2.setDisable(gamePaused);
+        cardButton3.setDisable(gamePaused);
+        cardButton4.setDisable(gamePaused);
+    }
+
+    @FXML
+    private void handleResumeGame() {
+
+        gamePaused = false;
+
+        pauseOverlay.setVisible(false);
+        pauseOverlay.setManaged(false);
+
+        if (timeThread != null) {
+            timeThread.resumeTimer();
+        }
+
+        refreshGraphicInterface();
+    }
+
+    @FXML
+    private void handleBackToMenu() {
+
+        try {
+
+            SceneManager.changeScene(Path.MenuView);
+
+        } catch (IOException e) {
+
+            displayStatusNotification(
+                    "Error",
+                    "Could not return to the main menu."
+            );
+
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleNewGame() {
+
+        gameModel = new GameModel(configurationNames);
+        gameModel.startNewGame();
+
+        selectedHandIndex = -1;
+
+        if (historyList != null) {
+            historyList.getItems().clear();
+        }
+
+        gamePaused = false;
+
+        pauseOverlay.setVisible(false);
+        pauseOverlay.setManaged(false);
+
+        refreshGraphicInterface();
     }
 }

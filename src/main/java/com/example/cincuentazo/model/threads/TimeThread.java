@@ -14,6 +14,8 @@ public class TimeThread extends Thread {
     private volatile boolean running = true;
     private int secondsElapsed = 0;
     private final Label timeLabel;
+    private volatile boolean paused = false;
+    private final Object pauseLock = new Object();
 
     /**
      * Constructs the TimeThread linked to a specific UI Label.
@@ -34,24 +36,51 @@ public class TimeThread extends Thread {
 
     @Override
     public void run() {
-        while (running) {
-            try {
-                Thread.sleep(1000);
-                secondsElapsed++;
-                int mins = secondsElapsed / 60;
-                int secs = secondsElapsed % 60;
-                String timeStr = String.format("%02d:%02d", mins, secs);
 
-                // Safe UI update on the JavaFX Thread
-                Platform.runLater(() -> {
-                    if (timeLabel != null) {
-                        timeLabel.setText(timeStr);
+        while (running) {
+
+            try {
+
+                synchronized (pauseLock) {
+                    while (paused) {
+                        pauseLock.wait();
                     }
-                });
+                }
+
+                Thread.sleep(1000);
+
+                secondsElapsed++;
+
+                Platform.runLater(() ->
+                        timeLabel.setText(formatTime(secondsElapsed)));
+
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break; // Exit the loop if interrupted
+
+                if (!running) {
+                    break;
+                }
             }
+        }
+    }
+
+    private String formatTime(int totalSeconds) {
+
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    public void pauseTimer() {
+        paused = true;
+        interrupt();
+    }
+
+    public void resumeTimer() {
+
+        synchronized (pauseLock) {
+            paused = false;
+            pauseLock.notifyAll();
         }
     }
 }

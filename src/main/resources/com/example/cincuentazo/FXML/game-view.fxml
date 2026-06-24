@@ -13,8 +13,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="700.0" prefWidth="900.0" styleClass="main-background" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cincuentazo.controller.GameController">
+<BorderPane prefHeight="700.0" prefWidth="900.0" styleClass="main-background" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cincuentazo.controller.GameController">
 
    <!-- ========================= -->
    <!-- BARRA SUPERIOR -->
@@ -32,7 +33,10 @@
 
          <Region HBox.hgrow="ALWAYS" />
 
-         <Button fx:id="settingsButton" styleClass="icon-button" text="⚙" />
+         <Button fx:id="pauseButton" styleClass="icon-button" text="I I">
+            <font>
+               <Font name="Arial Black" size="18.0" />
+            </font></Button>
 
       </HBox>
 
@@ -57,8 +61,11 @@
             <padding>
                <Insets bottom="15" left="15" right="15" top="15" />
             </padding>
-
-            <StackPane prefHeight="100" prefWidth="70" styleClass="deck-card" />
+            <ImageView fitHeight="85.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../CARDS_PNG/BACK.png" />
+               </image>
+            </ImageView>
 
             <VBox spacing="5">
 
@@ -118,7 +125,7 @@
 
                   <Label styleClass="stat-title" text="RONDA" />
 
-                  <Label fx:id="roundLabel" styleClass="stat-value" text="12" />
+                  <Label fx:id="roundLabel" styleClass="stat-value" text="01" />
 
                </VBox>
 
@@ -126,7 +133,7 @@
 
                   <Label styleClass="stat-title" text="TIEMPO" />
 
-                  <Label fx:id="timeLabel" styleClass="stat-value" text="04:15" />
+                  <Label fx:id="timeLabel" styleClass="stat-value" text="00:00" />
 
                </VBox>
 
@@ -170,15 +177,43 @@
 
                         <Label styleClass="player-name" text="gatitoPro" />
 
-                        <HBox alignment="CENTER" spacing="-10">
+                        <HBox alignment="CENTER" minWidth="-Infinity" prefHeight="49.0" prefWidth="65.0" spacing="-10">
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="50.0" prefWidth="77.0" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
                         </HBox>
 
@@ -203,13 +238,41 @@
 
                         <HBox alignment="CENTER" spacing="-10">
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
                         </HBox>
 
@@ -230,17 +293,45 @@
 
                         </StackPane>
 
-                        <Label styleClass="player-name" text="Máquina 3" />
+                        <Label styleClass="player-name" text="george.sigma" />
 
                         <HBox alignment="CENTER" spacing="-10">
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
-                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back" />
+                           <StackPane prefHeight="46" prefWidth="30" styleClass="card-back">
+                        <children>
+                           <ImageView fitHeight="46.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../CARDS_PNG/BACK.png" />
+                              </image>
+                           </ImageView>
+                        </children></StackPane>
 
                         </HBox>
 
@@ -286,15 +377,13 @@
             <!-- BADGE TU TURNO -->
             <!-- ========================================== -->
 
-                  <HBox alignment="CENTER" layoutX="53.0" layoutY="243.0" spacing="10" styleClass="turn-badge" AnchorPane.leftAnchor="53.0" AnchorPane.topAnchor="243.0">
+                  <HBox fx:id="turnBadge" alignment="CENTER" layoutX="53.0" layoutY="243.0" spacing="10" styleClass="turn-badge" AnchorPane.leftAnchor="53.0" AnchorPane.topAnchor="243.0">
 
                      <padding>
                   <Insets bottom="12" left="18" right="18" top="12" />
                </padding>
 
-                     <Label styleClass="turn-icon" text="★" />
-
-                     <Label styleClass="turn-text" text="Tu turno" />
+                     <Label fx:id="turnLabel" styleClass="turn-text" text="★ Tu turno" />
 
                   </HBox>
 
@@ -355,7 +444,21 @@
                      <Button fx:id="playCardButton" prefHeight="52" prefWidth="260" styleClass="play-button" text="Jugar Carta" />
 
                   </VBox>
+            <VBox fx:id="pauseOverlay" alignment="CENTER" managed="false" spacing="20" styleClass="pause-overlay" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
+               <VBox alignment="CENTER" spacing="15" styleClass="pause-panel">
+
+                  <Label styleClass="pause-title" text="JUEGO PAUSADO" />
+
+                  <Button onAction="#handleResumeGame" prefHeight="50" prefWidth="260" styleClass="play-button" text="▶ Reanudar Juego" />
+
+                  <Button onAction="#handleNewGame" prefHeight="50" prefWidth="260" styleClass="pause-secondary-button" text="↻ Nuevo Juego" />
+
+                  <Button onAction="#handleBackToMenu" prefHeight="50" prefWidth="260" styleClass="pause-secondary-button" text="⌂ Volver al Menú" />
+
+               </VBox>
+
+            </VBox>
          </AnchorPane>
 
       </StackPane>
