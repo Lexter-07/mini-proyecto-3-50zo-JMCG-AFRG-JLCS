@@ -10,7 +10,7 @@ import java.util.Stack;
 /**
  * Manages the draw deck pile using explicit Card objects.
  * Supports initialization, shuffling, and explicit drawing.
- * * @author AndresF395
+ * @author AndresF395
  * @version 1.0
  */
 public class Deck implements IDeck {
@@ -45,7 +45,7 @@ public class Deck implements IDeck {
 
     /**
      * Draws the top card from the deck pile.
-     * * @return the drawn Card object
+     * @return the drawn Card object
      * @throws EmptyDeckException if no cards are available to draw
      */
     public Card drawCard() throws EmptyDeckException {
@@ -57,13 +57,20 @@ public class Deck implements IDeck {
 
     /**
      * Restores the deck using discarded table cards during recycling.
-     * * @param recycledCards list of cards recovered from the table pile
+     * @param recycledCards list of cards recovered from the table pile
      */
     public void recycleDiscardPile(List<Card> recycledCards) {
         Collections.shuffle(recycledCards);
         drawPile.addAll(recycledCards);
     }
 
+    /**
+     * Retrieves the total number of cards currently remaining in the draw pile.
+     * This count represents the available stock of cards left for players to draw from
+     * during the match.
+     *
+     * @return The integer number of items currently inside the draw pile collection.
+     */
     public int getRemainingCount() {
         return drawPile.size();
     }

@@ -5,7 +5,7 @@ import com.example.cincuentazo.model.intefaces.ICard;
 /**
  * Represents a playing card with a specific suit and rank.
  * Automatically generates its resource image path based on its properties.
- * * @author AndresF395
+ * @author Andres Felipe Rodríguez, Jorge Luis Castro
  * @version 1.0
  */
 public class Card implements ICard {

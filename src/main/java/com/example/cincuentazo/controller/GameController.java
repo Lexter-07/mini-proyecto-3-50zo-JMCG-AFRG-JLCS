@@ -37,11 +37,24 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Controller strictly mapped to the custom user UI structure.
- * Relies on external services (Translation, TimeThread) for higher cohesion.
- * @author - Andrés Felipe Rodríguez García
- *         - Jorge Luis Castro Scarpetta
- *         - Jose Manuel Cardona Gil
+ * Main gameplay coordinator and UI controller strictly mapped to the custom FX view layout.  <p>
+ *
+ * This class serves as the core supervisor for the Cincuentazo match, driving both visual updates
+ *  * and operational turn advancements. To ensure single-responsibility and loose coupling, it delegates
+ *  * specialized processes to external services, including localized translation engines
+ *  * ({@link Translation}) and safe asynchronous concurrency wrappers ({@link TimeThread}, {@code TurnThread}). <p>
+ *
+ * Threading Architecture:
+ *
+ * <li><b>  JavaFX Application Thread:</b> Safely intercepts peripheral user gestures, keyboard bindings,
+ * and drives layout/canvas component re-rendering routines.</li>
+ * <li><b>  timeworker Daemon:</b> Handles standard stopwatch time tracking completely isolated from the UI frame cycle.</li>
+ * <li><b>  Turn Loop Controller:</b> Manages AI heuristic reasoning pauses and sequentially coordinates active seating turn shifts.</li>
+ * </ul>
+ *
+ * @author - Andrés Felipe Rodríguez García <p>
+ *         - Jorge Luis Castro Scarpetta <p>
+ *         - Jose Manuel Cardona Gil <p>
  * @version 2.3
  */
 public class GameController {
@@ -76,7 +89,7 @@ public class GameController {
 
     @FXML private VBox pauseOverlay;
 
-    // === CONTENEDORES DE LAS MÁQUINAS PARA OCULTARLAS ===
+    // COMPUTER WRAPPER BOXES FOR DYNAMIC LAYOUT MANAGEMENT AND HIDE THEM
     @FXML private VBox machine1Box;
     @FXML private VBox machine2Box;
     @FXML private VBox machine3Box;
@@ -87,12 +100,25 @@ public class GameController {
 
     // Concurrency controls
     private volatile boolean isGameRunning = false;
-    private TimeThread timeThread; // <-- Externalizado
-    private Thread machineThread;
     private boolean gamePaused = false;
+
+
+    /** Background manager handling game-time calculations asynchronously. */
+    private TimeThread timeThread; // <-- Externalizado
+    /** Custom engine regulating game turn flows, preventing UI thread lockup. */
     private TurnThread turnThread;
+
+    /** Pool containing AI strategic frameworks mapping to active machine opponents. */
     private List<IAPlayer> aiPlayers;
 
+
+    /**
+     * Automatically triggered by the JavaFX FXMLLoader runtime lifecycle once layout resources are fully ready. <p>
+     *
+     * Initializes core operational collections, configures responsive visual layout spaces
+     * based on user engine settings, assigns listeners, and starts decoupled timing loops
+     * alongside keyboard macro event captures.
+     */
     @FXML
     public void initialize() {
         setupCardInteractionEvents();
@@ -101,7 +127,7 @@ public class GameController {
 
         int machineCount = GameSettings.getMachineCount();
 
-        // Ocultar IAs no utilizadas visualmente
+        // Hide AIs don't used in the view
         if (machine1Box != null) { machine1Box.setVisible(machineCount >= 1); machine1Box.setManaged(machineCount >= 1); }
         if (machine2Box != null) { machine2Box.setVisible(machineCount >= 2); machine2Box.setManaged(machineCount >= 2); }
         if (machine3Box != null) { machine3Box.setVisible(machineCount >= 3); machine3Box.setManaged(machineCount >= 3); }
@@ -125,7 +151,7 @@ public class GameController {
 
         isGameRunning = true;
 
-        // Iniciar Hilo de Tiempo Externo
+        // Fire Externalized Time Mechanism Thread
         timeThread = new TimeThread(timeLabel);
         timeThread.start();
 
@@ -146,6 +172,7 @@ public class GameController {
 
         refreshGraphicInterface();
 
+        // Enforce structural window keystroke captures upon runtime layout attachment
         Platform.runLater(() -> {
             if (tablePane != null && tablePane.getScene() != null) {
                 tablePane.getScene().addEventHandler(KeyEvent.KEY_PRESSED, this::handleSystemKeyboardStroke);
@@ -154,6 +181,10 @@ public class GameController {
         });
     }
 
+
+    /**
+     * Binds mouse click interactions to human hand selector button slots.
+     */
     private void setupCardInteractionEvents() {
         if (cardButton1 != null) cardButton1.setOnMouseClicked(event -> highlightSelectedCard(0));
         if (cardButton2 != null) cardButton2.setOnMouseClicked(event -> highlightSelectedCard(1));
@@ -165,6 +196,12 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Updates the CSS style context to highlight the selected card in the player's hand.
+     *
+     * @param handIndex Integer index position (0 to 3) representing the chosen card asset slot.
+     */
     private void highlightSelectedCard(int handIndex) {
         selectedHandIndex = handIndex;
         List<Button> buttons = Arrays.asList(cardButton1, cardButton2, cardButton3, cardButton4);
@@ -178,6 +215,14 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Intercepts scene-wide keystrokes to bind structural macro triggers.
+     * Specifically maps the {@link KeyCode#SPACE} shortcut
+     * to confirm and play the highlighted card selection.
+     *
+     * @param event The triggered JavaFX {@link KeyEvent} context.
+     */
     private void handleSystemKeyboardStroke(KeyEvent event) {
         if (event.getCode() == KeyCode.SPACE) {
             event.consume();
@@ -185,6 +230,14 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Validates and submits the human player's card choice to the game engine. <p>
+     *
+     * If the move is legal, updates the match log utilizing localized translations
+     * via {@link Translation#generateSpanishCardName(Card)} and shifts the active turn authority.
+     * Displays alerts if selections are missing or illegal.
+     */
     private void processHumanMoveConfirmation() {
         Player human = gameModel.getPlayers().get(0);
         if (gameModel.getTurnSystem().getCurrentPlayer() != human) return;
@@ -197,7 +250,7 @@ public class GameController {
         try {
             gameModel.playTurnAction(human, choice);
 
-            // USO DE CLASE EXTERNA DE TRADUCCIÓN
+            // Utilizing decentralized translation parsing services
             if (historyList != null) {
                 historyList.getItems().add(0, "Jugaste: " + Translation.generateSpanishCardName(choice) + " | Suma: " + gameModel.getTableSum());
             }
@@ -216,6 +269,13 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Synchronizes and re-renders JavaFX elements with the current state of the game model. <p>
+     *
+     * Evaluates human player move options (triggering instant elimination if no legal moves remain),
+     * streams card image binary paths, updates running summary metrics, and configures turn badges.
+     */
     private void refreshGraphicInterface() {
         if (isGameRunning) {
             Player currentTurnPlayer = gameModel.getTurnSystem().getCurrentPlayer();
@@ -280,6 +340,13 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Evaluates win conditions to determine if the active match has concluded. <p></P>
+     *
+     * If conditions are met, running loops are closed, performance stats are compiled,
+     * and a static transfer is processed right before transitioning to the post-game summary screen.
+     */
     private void checkMatchTermination() {
 
         if (!gameModel.getTurnSystem().checkVictoryCondition()
@@ -324,9 +391,16 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Asynchronous callback interface link passed onto background threads
+     * to safely alert the system loop of match termination on the FX thread.
+     */
     private void handleGameEnd() {
         Platform.runLater(this::checkMatchTermination);
     }
+
+
 
     private void restartGame() {
         gameModel.startNewGame();
@@ -341,6 +415,13 @@ public class GameController {
         refreshGraphicInterface();
     }
 
+
+    /**
+     * Generates a structural modal confirmation or warning window container.
+     *
+     * @param title   Header layout identifier for the modal alert.
+     * @param summary Context body string message providing notification details.
+     */
     private void displayStatusNotification(String title, String summary) {
         Alert notification = new Alert(Alert.AlertType.INFORMATION);
         notification.setTitle(title);
@@ -369,7 +450,7 @@ public class GameController {
             turnLabel.setText("★ " + currentPlayer.getName());
         }
 
-        // Main play button
+        // Toggle execution locks over interactable control buttons
         playCardButton.setDisable(!humanTurn);
 
         // Hand cards
@@ -379,6 +460,11 @@ public class GameController {
         cardButton4.setDisable(!humanTurn);
     }
 
+
+    /**
+     * Toggles the game's paused state, updates the visibility of the menu overlay,
+     * and alerts background threads to halt or resume time calculations.
+     */
     private void togglePauseMenu() {
 
         gamePaused = !gamePaused;
@@ -403,6 +489,10 @@ public class GameController {
         cardButton4.setDisable(gamePaused);
     }
 
+
+    /**
+     * Closes the active pause overlay and resumes background gameplay processes.
+     */
     @FXML
     private void handleResumeGame() {
 
@@ -418,6 +508,10 @@ public class GameController {
         refreshGraphicInterface();
     }
 
+
+    /**
+     * Terminates the current game loop context and redirects the stage back to the main menu.
+     */
     @FXML
     private void handleBackToMenu() {
 
@@ -436,6 +530,10 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Resets the match state engine and clears layout properties to instantly launch a new game.
+     */
     @FXML
     private void handleNewGame() {
 

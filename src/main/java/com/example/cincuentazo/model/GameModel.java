@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class coordinates the central structural components of the match. <p>
  * Core “brain” funcionality that holds a state of elements for a unified game instance.
  * Houses core actions, triggers deck recycling, and coordinates with GameRules.
- * * @author AndresF395
+ * @author AndresF395
  * @version 1.0
  */
 public class GameModel implements IGameModel {
@@ -21,6 +22,18 @@ public class GameModel implements IGameModel {
     private int tableSum;
     private int roundNumber;
 
+    /**
+     * Constructs a new {@code GameModel} state engine instance initialized for a fresh match. <p>
+     *
+     * Allocates internal collections for the playing field and instantiates participating
+     * entities based on the provided list of identities. <p>
+     *
+     * the initial entity in the list (index {@code 0}) is designated as a human player,
+     * while subsequent entries are flagged as simulated/AI participants.
+     *
+     * @param playerNames A {@link List} of strings representing the names or profiles
+     * of the players joining the room. Index 0 must represent the human user.
+     */
     public GameModel(List<String> playerNames) {
         this.deck = new Deck();
         this.tablePile = new ArrayList<>();

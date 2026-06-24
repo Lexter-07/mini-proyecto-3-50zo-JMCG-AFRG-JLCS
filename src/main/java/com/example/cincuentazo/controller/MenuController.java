@@ -11,13 +11,13 @@ import java.io.IOException;
 
 /**
  * Controller responsible for handling all interactions
- * in the main menu view.
+ * in the main menu view. <p>
  *
  * This controller manages:
  * - Opponent selection (1, 2, or 3 AI players).
  * - Visual feedback for the selected option.
  * - Scene transitions to the game screen.
- * - Application termination.
+ * - Application termination. <p>
  *
  * The selected opponent count is maintained internally
  * and can later be passed to the game initialization logic.
@@ -46,7 +46,7 @@ public class MenuController {
 
     /**
      * Initializes menu components and registers the event handlers
-     * for the opponent selection buttons.
+     * for the opponent selection buttons. <p>
      *
      * The method also establishes the default configuration
      * by selecting one AI opponent when the menu is loaded.
@@ -63,7 +63,7 @@ public class MenuController {
 
     /**
      * Updates the selected number of AI opponents and refreshes
-     * the visual state of the selector buttons.
+     * the visual state of the selector buttons. <p>
      *
      * Only one button can remain active at a time.
      * The active button receives the "selector-active"
@@ -113,7 +113,7 @@ public class MenuController {
 
     /**
      * Starts the game using the currently selected
-     * number of AI opponents.
+     * number of AI opponents. <p>
      *
      * This method triggers the transition from the menu
      * view to the game view.
@@ -132,7 +132,7 @@ public class MenuController {
     }
 
     /**
-     * Closes the application.
+     * Closes the application. <p>
      *
      * This action is triggered when the user presses
      * the exit button in the main menu.

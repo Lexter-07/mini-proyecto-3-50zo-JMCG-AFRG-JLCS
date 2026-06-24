@@ -3,7 +3,7 @@ package com.example.cincuentazo.model;
 /**
  * Pure mathematical utility class responsible for verifying card game values
  * and assessing structural movement validity under Cincuentazo regulations.
- * * @author AndresF395
+ * @author AndresF395
  * @version 1.0
  */
 public class GameRules {
