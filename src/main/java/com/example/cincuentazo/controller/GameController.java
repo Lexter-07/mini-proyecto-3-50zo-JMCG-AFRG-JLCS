@@ -7,9 +7,11 @@ import com.example.cincuentazo.model.Player;
 import com.example.cincuentazo.config.GameSettings;
 import com.example.cincuentazo.model.threads.TimeThread;
 import com.example.cincuentazo.model.Translation;
-
+import com.example.cincuentazo.model.ia.IAPlayer;
+import com.example.cincuentazo.model.threads.TurnThread;
 import com.example.cincuentazo.view.Path;
 import com.example.cincuentazo.view.SceneManager;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,8 +39,10 @@ import java.util.List;
 /**
  * Controller strictly mapped to the custom user UI structure.
  * Relies on external services (Translation, TimeThread) for higher cohesion.
- * @author Andrés Felipe Rodríguez García
- * @version 2.1
+ * @author - Andrés Felipe Rodríguez García
+ *         - Jorge Luis Castro Scarpetta
+ *         - Jose Manuel Cardona Gil
+ * @version 2.3
  */
 public class GameController {
 
@@ -46,6 +50,7 @@ public class GameController {
     @FXML private Label sumLabel;
     @FXML private Label roundLabel;
     @FXML private Label timeLabel;
+    @FXML private Label turnLabel;
     @FXML private Label deckCountLabel;
     @FXML private ListView<String> historyList;
 
@@ -65,7 +70,7 @@ public class GameController {
     @FXML private Button playCardButton;
 
     @FXML private HBox turnBadge;
-    @FXML private Label turnLabel;
+
 
     @FXML private Button pauseButton;
 
@@ -85,6 +90,8 @@ public class GameController {
     private TimeThread timeThread; // <-- Externalizado
     private Thread machineThread;
     private boolean gamePaused = false;
+    private TurnThread turnThread;
+    private List<IAPlayer> aiPlayers;
 
     @FXML
     public void initialize() {
@@ -106,6 +113,12 @@ public class GameController {
         }
 
         gameModel = new GameModel(configurationNames);
+
+        aiPlayers = new ArrayList<>();
+        for (int i = 1; i < gameModel.getPlayers().size(); i++) {
+            aiPlayers.add(new IAPlayer(IAPlayer.Difficulty.HARD));
+        }
+
         gameModel.startNewGame();
 
         if (roundLabel != null) roundLabel.setText("1");
@@ -116,8 +129,21 @@ public class GameController {
         timeThread = new TimeThread(timeLabel);
         timeThread.start();
 
+        turnThread = new TurnThread(
+                gameModel,
+                aiPlayers,
+                this::refreshGraphicInterface,
+                message -> {
+                    if (historyList != null) {
+                        historyList.getItems().add(0, message);
+                    }
+                },
+                this::handleGameEnd
+        );
 
-        startMachineThread();
+        turnThread.setDaemon(true);
+        turnThread.start();
+
         refreshGraphicInterface();
 
         Platform.runLater(() -> {
@@ -181,66 +207,13 @@ public class GameController {
             refreshGraphicInterface();
             checkMatchTermination();
 
+            if (turnThread != null) {
+                turnThread.notifyHumanPlayed();
+            }
+
         } catch (InvalidMoveException e) {
             displayStatusNotification("Jugada Ilegal", "Esta carta supera los 50 puntos. Intenta con otra.");
         }
-    }
-
-    private void startMachineThread() {
-        machineThread = new Thread(() -> {
-            while (isGameRunning) {
-                try {
-                    Thread.sleep(1000);
-                    if (!isGameRunning) break;
-
-                    Player current = gameModel.getTurnSystem().getCurrentPlayer();
-                    if (!current.isHuman() && !current.isEliminated()) {
-
-                        Thread.sleep(2000 + (long)(Math.random() * 2000));
-                        if (!isGameRunning) break;
-
-                        Platform.runLater(() -> handleAutomatedTurnPass(current));
-                        Thread.sleep(1000 + (long)(Math.random() * 1000));
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        });
-        machineThread.setDaemon(true);
-        machineThread.start();
-    }
-
-    private void handleAutomatedTurnPass(Player current) {
-        if (!isGameRunning || gameModel.getTurnSystem().checkVictoryCondition()) return;
-
-        Card safeChoice = null;
-        for (Card card : current.getHand()) {
-            if (com.example.cincuentazo.model.GameRules.isValidMove(card, gameModel.getTableSum())) {
-                safeChoice = card;
-                break;
-            }
-        }
-
-        if (safeChoice != null) {
-            try {
-                gameModel.playTurnAction(current, safeChoice);
-                if (historyList != null) {
-                    // USO DE CLASE EXTERNA DE TRADUCCIÓN
-                    historyList.getItems().add(0, current.getName() + " jugó " + Translation.generateSpanishCardName(safeChoice));
-                }
-            } catch (InvalidMoveException ignored) {}
-        } else {
-            gameModel.eliminatePlayer(current);
-            if (historyList != null) {
-                historyList.getItems().add(0, current.getName() + " ELIMINADO.");
-            }
-        }
-
-        gameModel.getTurnSystem().advanceTurn();
-        refreshGraphicInterface();
-        checkMatchTermination();
     }
 
     private void refreshGraphicInterface() {
@@ -316,13 +289,8 @@ public class GameController {
 
         isGameRunning = false;
 
-        if (timeThread != null) {
-            timeThread.stopTimer();
-        }
-
-        if (machineThread != null) {
-            machineThread.interrupt();
-        }
+        if (timeThread != null) timeThread.stopTimer();
+        if (turnThread != null) turnThread.stopThread();
 
         Player winner = gameModel.getPlayers()
                 .stream()
@@ -356,6 +324,10 @@ public class GameController {
         }
     }
 
+    private void handleGameEnd() {
+        Platform.runLater(this::checkMatchTermination);
+    }
+
     private void restartGame() {
         gameModel.startNewGame();
         if (historyList != null) historyList.getItems().clear();
@@ -365,7 +337,6 @@ public class GameController {
         // Re-iniciar Hilos
         timeThread = new TimeThread(timeLabel);
         timeThread.start();
-        startMachineThread();
 
         refreshGraphicInterface();
     }
