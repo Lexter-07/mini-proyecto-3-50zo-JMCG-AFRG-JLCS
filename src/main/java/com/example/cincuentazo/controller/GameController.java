@@ -300,37 +300,59 @@ public class GameController {
         if (sumLabel != null) sumLabel.setText(String.valueOf(gameModel.getTableSum()));
         if (deckCountLabel != null) deckCountLabel.setText(String.valueOf(gameModel.getDeck().getRemainingCount()));
         updateTurnIndicator();
+        if (roundLabel != null) {
+            roundLabel.setText(String.valueOf(
+                    gameModel.getRoundNumber()
+            ));
+        }
     }
 
     private void checkMatchTermination() {
-        if (gameModel.getTurnSystem().checkVictoryCondition() && isGameRunning) {
-            isGameRunning = false;
 
-            // Detener hilos usando referencias seguras
-            if (timeThread != null) timeThread.stopTimer();
-            if (machineThread != null) machineThread.interrupt();
+        if (!gameModel.getTurnSystem().checkVictoryCondition()
+                || !isGameRunning) {
+            return;
+        }
 
-            Player winner = gameModel.getPlayers().stream().filter(p -> !p.isEliminated()).findFirst().orElse(null);
-            String winnerName = (winner != null) ? winner.getName() : "Nadie";
+        isGameRunning = false;
 
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Fin del Juego - Cincuentazo");
-            alert.setHeaderText("¡Juego Terminado!");
-            alert.setContentText("El ganador es: " + winnerName + ".\n¿Qué deseas hacer ahora?");
+        if (timeThread != null) {
+            timeThread.stopTimer();
+        }
 
-            ButtonType btnPlayAgain = new ButtonType("Jugar otra ronda");
-            ButtonType btnExit = new ButtonType("Terminar juego", ButtonBar.ButtonData.CANCEL_CLOSE);
+        if (machineThread != null) {
+            machineThread.interrupt();
+        }
 
-            alert.getButtonTypes().setAll(btnPlayAgain, btnExit);
+        Player winner = gameModel.getPlayers()
+                .stream()
+                .filter(player -> !player.isEliminated())
+                .findFirst()
+                .orElse(null);
 
-            alert.showAndWait().ifPresent(type -> {
-                if (type == btnPlayAgain) {
-                    restartGame();
-                } else {
-                    Platform.exit();
-                    System.exit(0);
-                }
-            });
+        String winnerName =
+                winner != null
+                        ? winner.getName()
+                        : "No Winner";
+
+        String finalTime =
+                timeThread != null
+                        ? timeThread.getFormattedTime()
+                        : "00:00";
+
+        FinalController.setMatchResults(
+                winnerName,
+                gameModel.getRoundNumber(),
+                finalTime
+        );
+
+        try {
+
+            SceneManager.changeScene(Path.FinalView);
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
         }
     }
 

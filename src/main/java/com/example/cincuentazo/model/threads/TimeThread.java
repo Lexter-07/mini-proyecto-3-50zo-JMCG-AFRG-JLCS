@@ -83,4 +83,7 @@ public class TimeThread extends Thread {
             pauseLock.notifyAll();
         }
     }
+
+    public int getSecondsElapsed() {return secondsElapsed;}
+    public String getFormattedTime() {return formatTime(secondsElapsed);}
 }

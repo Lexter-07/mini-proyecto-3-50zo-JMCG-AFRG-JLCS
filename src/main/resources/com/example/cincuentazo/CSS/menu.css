@@ -158,3 +158,21 @@
                     6
             );
 }
+
+.winner-label {
+
+    -fx-text-fill: #e9c349;
+
+    -fx-font-size: 42;
+
+    -fx-font-weight: bold;
+}
+
+.final-stat {
+
+    -fx-text-fill: white;
+
+    -fx-font-size: 28;
+
+    -fx-font-weight: bold;
+}

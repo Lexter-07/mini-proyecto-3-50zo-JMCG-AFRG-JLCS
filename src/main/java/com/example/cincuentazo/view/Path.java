@@ -16,4 +16,5 @@ package com.example.cincuentazo.view;
 public class Path {
     public static final String MenuView = "/com/example/cincuentazo/FXML/menu-view.fxml";
     public static final String GameView = "/com/example/cincuentazo/FXML/game-view.fxml";
+    public static final String FinalView = "/com/example/cincuentazo/FXML/final-view.fxml";
 }

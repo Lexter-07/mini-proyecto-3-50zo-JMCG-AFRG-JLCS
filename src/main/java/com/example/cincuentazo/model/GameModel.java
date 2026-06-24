@@ -19,6 +19,7 @@ public class GameModel implements IGameModel {
     private final List<Player> players;
     private final Turn turnSystem;
     private int tableSum;
+    private int roundNumber;
 
     public GameModel(List<String> playerNames) {
         this.deck = new Deck();
@@ -42,6 +43,7 @@ public class GameModel implements IGameModel {
         deck.shuffleDeck();
         tableSum = 0;
         tablePile.clear();
+        roundNumber = 1;
 
         // Deal 4 cards per player
         for (Player player : players) {
@@ -80,6 +82,7 @@ public class GameModel implements IGameModel {
         tableSum += GameRules.calculateCardValue(card, tableSum);
         player.removeCardFromHand(card);
         tablePile.add(card);
+        roundNumber++;
 
         // Draw replenishment card
         try {
@@ -115,6 +118,8 @@ public class GameModel implements IGameModel {
         deck.recycleDiscardPile(new ArrayList<>(player.getHand()));
         player.getHand().clear();
     }
+
+    public int getRoundNumber() {return roundNumber;}
 
     public int getTableSum() {
         return tableSum;

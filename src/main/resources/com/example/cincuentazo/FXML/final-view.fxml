@@ -1,14 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="FinalController"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane
+        prefHeight="600"
+        prefWidth="900"
+        styleClass="menu-background"
+        stylesheets="@../CSS/menu.css"
+        xmlns="http://javafx.com/javafx/25"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.example.cincuentazo.controller.FinalController">
+
+    <VBox alignment="CENTER"
+          spacing="18"
+          AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0"
+          AnchorPane.topAnchor="90">
+
+        <Label
+                text="JUEGO TERMINADO"
+                styleClass="main-title"/>
+
+        <Label
+                text="Ganador"
+                styleClass="section-title"/>
+
+        <Label
+                fx:id="winnerLabel"
+                styleClass="winner-label"/>
+
+        <Label
+                text="Rondas Jugadas"
+                styleClass="section-title"/>
+
+        <Label
+                fx:id="roundsLabel"
+                styleClass="final-stat"/>
+
+        <Label
+                text="Tiempo jugado"
+                styleClass="section-title"/>
+
+        <Label
+                fx:id="timeLabel"
+                styleClass="final-stat"/>
+
+        <Button
+                text="▶ Nuevo juego"
+                styleClass="play-button"
+                onAction="#handlePlayAgain"/>
+
+        <Button
+                text="Volver al menu"
+                styleClass="exit-button"
+                onAction="#handleBackToMenu"/>
+
+    </VBox>
 
 </AnchorPane>
