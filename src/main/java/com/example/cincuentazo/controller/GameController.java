@@ -342,6 +342,8 @@ public class GameController {
                     gameModel.getRoundNumber()
             ));
         }
+
+        updateMachineStatus();
     }
 
 
@@ -575,6 +577,36 @@ public class GameController {
         timeThread = new TimeThread(timeLabel);
         timeThread.start();
 
+        updateMachineStatus();
         refreshGraphicInterface();
+    }
+
+    private void updateMachineStatus() {
+
+        List<Player> players = gameModel.getPlayers();
+
+        if (players.size() > 1 && machine1Box != null) {
+            machine1Box.setOpacity(
+                    players.get(1).isEliminated()
+                            ? 0.30
+                            : 1.0
+            );
+        }
+
+        if (players.size() > 2 && machine2Box != null) {
+            machine2Box.setOpacity(
+                    players.get(2).isEliminated()
+                            ? 0.30
+                            : 1.0
+            );
+        }
+
+        if (players.size() > 3 && machine3Box != null) {
+            machine3Box.setOpacity(
+                    players.get(3).isEliminated()
+                            ? 0.30
+                            : 1.0
+            );
+        }
     }
 }
