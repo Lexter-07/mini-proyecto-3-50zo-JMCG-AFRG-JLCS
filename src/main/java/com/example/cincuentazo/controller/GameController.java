@@ -100,6 +100,8 @@ public class GameController {
 
     // Concurrency controls
     private volatile boolean isGameRunning = false;
+    private boolean humanEliminationHandled = false;
+    private boolean gameEndHandled = false;
     private boolean gamePaused = false;
 
 
@@ -139,13 +141,12 @@ public class GameController {
         }
 
         gameModel = new GameModel(configurationNames);
+        gameModel.startNewGame();
 
         aiPlayers = new ArrayList<>();
         for (int i = 1; i < gameModel.getPlayers().size(); i++) {
             aiPlayers.add(new IAPlayer(IAPlayer.Difficulty.HARD));
         }
-
-        gameModel.startNewGame();
 
         if (roundLabel != null) roundLabel.setText("1");
 
@@ -258,7 +259,7 @@ public class GameController {
             selectedHandIndex = -1;
             gameModel.getTurnSystem().advanceTurn();
             refreshGraphicInterface();
-            checkMatchTermination();
+            //checkMatchTermination();
 
             if (turnThread != null) {
                 turnThread.notifyHumanPlayed();
@@ -288,15 +289,18 @@ public class GameController {
                     }
                 }
 
-                if (!humanHasValidMoves) {
-                    Platform.runLater(() -> {
-                        displayStatusNotification("¡Eliminado!", "No tienes cartas válidas. Quedas eliminado.");
-                        gameModel.eliminatePlayer(currentTurnPlayer);
-                        if (historyList != null) historyList.getItems().add(0, "Tú (Humano) fuiste ELIMINADO.");
-                        gameModel.getTurnSystem().advanceTurn();
-                        refreshGraphicInterface();
-                        checkMatchTermination();
-                    });
+                if (!humanHasValidMoves  && !humanEliminationHandled) {
+                    humanEliminationHandled = true;
+                    displayStatusNotification("¡Eliminado!", "No tienes cartas válidas. Quedas eliminado.");
+
+                    gameModel.eliminatePlayer(currentTurnPlayer);
+
+                    if (historyList != null) {
+                        historyList.getItems().add(0, "Tú (Humano) fuiste ELIMINADO.");
+                    }
+                    gameModel.getTurnSystem().advanceTurn();
+                    refreshGraphicInterface();
+
                     return;
                 }
             }
@@ -349,11 +353,16 @@ public class GameController {
      */
     private void checkMatchTermination() {
 
+        if (gameEndHandled) {
+            return;
+        }
+
         if (!gameModel.getTurnSystem().checkVictoryCondition()
                 || !isGameRunning) {
             return;
         }
 
+        gameEndHandled = true;
         isGameRunning = false;
 
         if (timeThread != null) timeThread.stopTimer();
@@ -400,20 +409,6 @@ public class GameController {
         Platform.runLater(this::checkMatchTermination);
     }
 
-
-
-    private void restartGame() {
-        gameModel.startNewGame();
-        if (historyList != null) historyList.getItems().clear();
-        selectedHandIndex = -1;
-        isGameRunning = true;
-
-        // Re-iniciar Hilos
-        timeThread = new TimeThread(timeLabel);
-        timeThread.start();
-
-        refreshGraphicInterface();
-    }
 
 
     /**
@@ -481,6 +476,14 @@ public class GameController {
             }
         }
 
+        if (turnThread != null)
+            if (gamePaused) {
+                turnThread.pauseThread();
+            } else {
+                turnThread.resumeThread();
+            }
+
+
         playCardButton.setDisable(gamePaused);
 
         cardButton1.setDisable(gamePaused);
@@ -501,9 +504,8 @@ public class GameController {
         pauseOverlay.setVisible(false);
         pauseOverlay.setManaged(false);
 
-        if (timeThread != null) {
-            timeThread.resumeTimer();
-        }
+        if (timeThread != null) timeThread.resumeTimer();
+        if (turnThread != null) turnThread.resumeThread();
 
         refreshGraphicInterface();
     }
@@ -537,8 +539,15 @@ public class GameController {
     @FXML
     private void handleNewGame() {
 
+        if (turnThread != null) turnThread.stopThread();
+
         gameModel = new GameModel(configurationNames);
         gameModel.startNewGame();
+
+        aiPlayers = new ArrayList<>();
+        for (int i = 1; i < gameModel.getPlayers().size(); i++) {
+            aiPlayers.add(new IAPlayer(IAPlayer.Difficulty.HARD));
+        }
 
         selectedHandIndex = -1;
 
@@ -546,10 +555,25 @@ public class GameController {
             historyList.getItems().clear();
         }
 
+        gameEndHandled = false;
         gamePaused = false;
+        humanEliminationHandled = false;
 
         pauseOverlay.setVisible(false);
         pauseOverlay.setManaged(false);
+
+        turnThread = new TurnThread(
+                gameModel,
+                aiPlayers,
+                this::refreshGraphicInterface,
+                message -> {
+                    if (historyList != null) historyList.getItems().add(0, message);
+                },
+                this::handleGameEnd
+        );
+        turnThread.start();
+        timeThread = new TimeThread(timeLabel);
+        timeThread.start();
 
         refreshGraphicInterface();
     }

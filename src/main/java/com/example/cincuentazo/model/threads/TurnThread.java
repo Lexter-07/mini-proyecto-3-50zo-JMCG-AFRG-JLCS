@@ -32,6 +32,7 @@ public class TurnThread extends Thread {
     private final Consumer<String> historyLogger;
     private volatile boolean running = true;
     private volatile boolean humanTurnDone = false;
+    private volatile boolean paused = false;
 
     public TurnThread(GameModel gameModel,
                       List<IAPlayer> aiPlayers,
@@ -57,6 +58,14 @@ public class TurnThread extends Thread {
 
         while (running && !gameModel.getTurnSystem().checkVictoryCondition()) {
 
+            while (paused && running) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+
             Player current = gameModel.getTurnSystem().getCurrentPlayer();
 
             // update UI
@@ -80,10 +89,13 @@ public class TurnThread extends Thread {
                     if (choice != null) {
                         gameModel.playTurnAction(current, choice);
 
-                        Platform.runLater(() -> historyLogger.accept(
-                                current.getName() + " jugó " + choice +
-                                        " | Suma: " + gameModel.getTableSum()
-                        ));
+                        Platform.runLater(() -> {
+                            historyLogger.accept(
+                                    current.getName() + " jugó " + choice +
+                                            " | Suma: " + gameModel.getTableSum()
+                            );
+                            refreshUI.run();
+                        });
 
                     } else {
                         gameModel.eliminatePlayer(current);
@@ -93,8 +105,13 @@ public class TurnThread extends Thread {
                         ));
                     }
 
-                    gameModel.getTurnSystem().advanceTurn();
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
 
+                    gameModel.getTurnSystem().advanceTurn();
                     Platform.runLater(refreshUI);
 
                 } catch (Exception e) {
@@ -112,12 +129,13 @@ public class TurnThread extends Thread {
                 }
 
                 if (!hasValidMove && !current.isEliminated()) {
-                    gameModel.eliminatePlayer(current);
-                    gameModel.getTurnSystem().advanceTurn();
-                    Platform.runLater(() -> {
-                        historyLogger.accept(current.getName() + " fue ELIMINADO!");
-                        refreshUI.run();
-                    });
+                    Platform.runLater(refreshUI);
+
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
                     continue;
                 }
 
@@ -143,6 +161,14 @@ public class TurnThread extends Thread {
     public void stopThread() {
         running = false;
         this.interrupt();
+    }
+
+    public void pauseThread() {
+        paused = true;
+    }
+
+    public void resumeThread() {
+        paused = false;
     }
 
 }
