@@ -1,5 +1,7 @@
 package com.example.cincuentazo.model;
 
+import com.example.cincuentazo.model.intefaces.ITurn;
+
 import java.util.List;
 
 /**
@@ -8,11 +10,18 @@ import java.util.List;
  * @author Andres Felipe Rodríguez
  * @version 1.0
  */
-public class Turn {
+public class Turn implements ITurn {
 
     private int currentPlayerIndex;
     private final List<Player> players;
 
+    /**
+     * Constructs a turn manager associated with the provided
+     * player roster. The first participant is assigned the
+     * opening turn.
+     *
+     * @param players list of players participating in the match
+     */
     public Turn(List<Player> players) {
         this.players = players;
         this.currentPlayerIndex = 0;
@@ -32,17 +41,19 @@ public class Turn {
         return getCurrentPlayer();
     }
 
+
+    /**
+     * Retrieves the participant currently holding the turn.
+     * @return the active player
+     */
     public Player getCurrentPlayer() {
         return players.get(currentPlayerIndex);
     }
 
-    public int getCurrentPlayerIndex() {
-        return currentPlayerIndex;
-    }
 
     /**
      * Scans player metrics to establish if only a single survivor remains.
-     * * @return true if the game setup meets concluding conditions
+     * @return true if the game setup meets concluding conditions
      */
     public boolean checkVictoryCondition() {
         long activeCount = players.stream().filter(p -> !p.isEliminated()).count();

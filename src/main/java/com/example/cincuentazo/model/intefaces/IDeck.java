@@ -6,6 +6,9 @@ package com.example.cincuentazo.model.intefaces;
  * Implementing classes are responsible for managing the structural lifecycle of a
  * card deck, which includes instantiating the standard set of playing cards,
  * randomizing their sequence, and tracking the remaining count as cards are drawn.
+ *
+ * @author Jorge Luis Castro Scarpetta
+ * @version 1.0
  */
 public interface IDeck {
 

@@ -16,7 +16,7 @@ import java.util.*;
  using JavaFX threads.
  * .
  * * @author Jorge Castro
- * @version 2.0
+ * @version 2.1
  */
 public class TurnThread extends Thread {
 
@@ -26,14 +26,38 @@ public class TurnThread extends Thread {
     /** List of AI controlled players available in the game. */
     private final List<IAPlayer> aiPlayers;
 
-    private final Runnable refreshUI;
-    private final Runnable onGameEnd;
 
+    /** Callback used to refresh the graphical interface. */
+    private final Runnable refreshUI;
+    /** Callback executed when a victory condition is reached. */
+    private final Runnable onGameEnd;
+    /** Consumer responsible for recording events in the match history. */
     private final Consumer<String> historyLogger;
+
+
+    /** Indicates whether the thread should continue executing. */
     private volatile boolean running = true;
+
+    /** Signals that the human player has completed their turn. */
     private volatile boolean humanTurnDone = false;
+
+    /** Indicates whether turn processing is temporarily suspended. */
     private volatile boolean paused = false;
 
+
+
+    /**
+     * Creates a turn management thread associated with the current match. <p>
+     *
+     * Receives references to the game model, AI participants, UI update
+     * callbacks, history logging functionality, and the game-ending handler.
+     *
+     * @param gameModel central game state manager
+     * @param aiPlayers list of AI-controlled players
+     * @param refreshUI callback responsible for refreshing the interface
+     * @param historyLogger callback used to register gameplay events
+     * @param onGameEnd callback executed when the match concludes
+     */
     public TurnThread(GameModel gameModel,
                       List<IAPlayer> aiPlayers,
                       Runnable refreshUI,
@@ -49,10 +73,24 @@ public class TurnThread extends Thread {
         setDaemon(true);
     }
 
+
+    /**
+     * Notifies the thread that the human player has completed
+     * their move and the turn cycle may continue.
+     */
     public void notifyHumanPlayed() {
         humanTurnDone = true;
     }
 
+
+    /**
+     * Main execution loop of the turn manager. <p>
+     *
+     * Continuously evaluates the current player, executes AI actions,
+     * waits for human interaction when necessary, processes eliminations,
+     * and updates the graphical interface until a victory condition
+     * is reached or the thread is stopped.
+     */
     @Override
     public void run() {
 
@@ -139,7 +177,7 @@ public class TurnThread extends Thread {
                     continue;
                 }
 
-                // esperar hasta que el humano juegue
+                // Wait until human plays
                 while (!humanTurnDone && running) {
                     try {
                         Thread.sleep(100);
@@ -158,15 +196,28 @@ public class TurnThread extends Thread {
     }
 
 
+    /**
+     * Stops the execution of the turn management thread
+     * and interrupts any ongoing waiting operation.
+     */
     public void stopThread() {
         running = false;
         this.interrupt();
     }
 
+
+    /**
+     * Temporarily suspends turn processing. <p>
+     *
+     * While paused, the thread remains alive but does not
+     * advance turns or execute AI actions.
+     */
     public void pauseThread() {
         paused = true;
     }
 
+
+    /** Resumes turn processing after a pause request. */
     public void resumeThread() {
         paused = false;
     }

@@ -55,7 +55,7 @@ import java.util.List;
  * @author - Andrés Felipe Rodríguez García <p>
  *         - Jorge Luis Castro Scarpetta <p>
  *         - Jose Manuel Cardona Gil <p>
- * @version 2.3
+ * @version 2.4
  */
 public class GameController {
 
@@ -536,12 +536,21 @@ public class GameController {
 
 
     /**
-     * Resets the match state engine and clears layout properties to instantly launch a new game.
+     * Resets the current match and initializes a completely new game state. <p>
+     *
+     * Stops active background threads, recreates the game model, restores
+     * AI participants, clears runtime statistics and user selections,
+     * and launches fresh timer and turn-management threads. <p>
+     *
+     * The method also restores visual interface components to their
+     * default state and synchronizes all graphical elements with the
+     * newly generated match.
      */
     @FXML
     private void handleNewGame() {
 
         if (turnThread != null) turnThread.stopThread();
+        if (timeThread != null) timeThread.stopTimer();
 
         gameModel = new GameModel(configurationNames);
         gameModel.startNewGame();
@@ -581,6 +590,15 @@ public class GameController {
         refreshGraphicInterface();
     }
 
+
+    /**
+     * Updates the visual status indicators associated with AI opponents. <p>
+     *
+     * Machine panels remain fully visible while their corresponding
+     * players are active and become semi-transparent when eliminated.
+     * This provides immediate visual feedback regarding the remaining
+     * competitors in the match.
+     */
     private void updateMachineStatus() {
 
         List<Player> players = gameModel.getPlayers();

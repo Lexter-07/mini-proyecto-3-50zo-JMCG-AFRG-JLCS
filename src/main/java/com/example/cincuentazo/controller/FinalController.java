@@ -8,8 +8,8 @@ import javafx.scene.control.Label;
 import java.io.IOException;
 
 /**
- * Controller class for the match-over / game-over summary screen in Cincuentazo.
- * <p>
+ * Controller class for the match-over / game-over summary screen in Cincuentazo. <p>
+ *
  * This class is bound to the FXML end-game view and is responsible for rendering
  * the final match statistics (winner name, total rounds played, and elapsed time)
  * transferred statically from the game controller. It also handles navigational
