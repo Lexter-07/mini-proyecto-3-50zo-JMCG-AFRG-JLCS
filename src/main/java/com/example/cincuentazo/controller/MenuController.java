@@ -38,7 +38,7 @@ public class MenuController {
     private Button threeMachine;
 
     /**
-     * Stores the number of AI opponents selected by the user.
+     * Stores the number of AI opponents selected by the user. <p>
      *
      * Default value is 1, matching the initial active button
      * displayed in the menu interface.

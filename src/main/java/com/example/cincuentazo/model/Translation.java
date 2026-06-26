@@ -1,7 +1,5 @@
 package com.example.cincuentazo.model;
 
-import com.example.cincuentazo.model.Card;
-
 /**
  * Utility class dedicated to translating internal game entities
  * into readable Spanish strings for the User Interface.
