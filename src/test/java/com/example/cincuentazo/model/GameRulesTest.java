@@ -4,8 +4,22 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link GameRules} class. <p>
+ *
+ * Verifies the calculation of card values according to
+ * the game rules and the validation of legal and illegal
+ * player moves.
+ *
+ * @author Jose Manuel Cardona Gil
+ * @version 1.0
+ */
 class GameRulesTest {
 
+    /**
+     * Verifies that an Ace is valued at ten points
+     * whenever doing so does not exceed the maximum allowed table value.
+     */
     @Test
     void aceShouldBeWorthTenWhenPossible() {
 
@@ -17,6 +31,10 @@ class GameRulesTest {
         );
     }
 
+    /**
+     * Verifies that an Ace is valued at one point
+     * when assigning ten points would exceed the table limit.
+     */
     @Test
     void aceShouldBeWorthOneWhenNearFifty() {
 
@@ -28,6 +46,10 @@ class GameRulesTest {
         );
     }
 
+    /**
+     * Verifies that a Nine contributes zero points
+     * according to the game rules.
+     */
     @Test
     void nineShouldBeWorthZero() {
 
@@ -39,6 +61,10 @@ class GameRulesTest {
         );
     }
 
+    /**
+     * Verifies that a King subtracts ten points
+     * from the current table value.
+     */
     @Test
     void kingShouldSubtractTen() {
 
@@ -50,6 +76,10 @@ class GameRulesTest {
         );
     }
 
+    /**
+     * Verifies that a move is considered valid
+     * when the resulting table value does not exceed the maximum allowed limit.
+     */
     @Test
     void shouldValidateLegalMove() {
 
@@ -60,6 +90,10 @@ class GameRulesTest {
         );
     }
 
+    /**
+     * Verifies that a move is rejected when
+     * playing the selected card would cause the table value to exceed fifty.
+     */
     @Test
     void shouldRejectIllegalMove() {
 

@@ -7,10 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class coordinates the central structural components of the match. <p>
- * Core “brain” funcionality that holds a state of elements for a unified game instance.
- * Houses core actions, triggers deck recycling, and coordinates with GameRules.
- * @author AndresF395
+ * Represents the central game engine responsible for maintaining and
+ * coordinating the complete state of a Cincuentazo match. <p>
+ *
+ * It manages the deck, players, turn system, table cards, accumulated score,
+ * round progression, and delegates rule validation to {@link GameRules}.
+ *
+ * @author Andres Felipe Rodríguez
  * @version 1.0
  */
 public class GameModel implements IGameModel {
@@ -132,24 +135,52 @@ public class GameModel implements IGameModel {
         player.getHand().clear();
     }
 
+    /**
+     * Returns the current round number of the match.
+     * @return the number representing the current completed turn count.
+     */
     public int getRoundNumber() {return roundNumber;}
 
+    /**
+     * Returns the current accumulated value on the table.
+     * @return the current table sum.
+     */
     public int getTableSum() {
         return tableSum;
     }
 
+    /**
+     * Returns the collection of players participating in the match.
+     * @return the list containing every player instance.
+     */
     public List<Player> getPlayers() {
         return players;
     }
 
+    /**
+     * Returns the turn management component responsible for controlling the
+     * player rotation throughout the match.
+     *
+     * @return the game's turn controller.
+     */
     public Turn getTurnSystem() {
         return turnSystem;
     }
 
+    /**
+     * Returns the deck currently used by the match.
+     * @return the active draw deck.
+     */
     public Deck getDeck() {
         return deck;
     }
 
+    /**
+     * Returns the most recently played card currently visible on the table.
+     *
+     * @return the top card of the table pile, or {@code null} if no card is
+     * currently available.
+     */
     public Card getTopTableCard() {
         return tablePile.isEmpty() ? null : tablePile.get(tablePile.size() - 1);
     }

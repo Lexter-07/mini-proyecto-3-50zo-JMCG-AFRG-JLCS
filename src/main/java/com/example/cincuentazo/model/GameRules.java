@@ -3,17 +3,18 @@ package com.example.cincuentazo.model;
 /**
  * Pure mathematical utility class responsible for verifying card game values
  * and assessing structural movement validity under Cincuentazo regulations.
- * @author AndresF395
+ * @author Andres Felipe Rodríguez
  * @version 1.0
  */
 public class GameRules {
 
+    /** indicates the maximum possible sum in the game  */
     public static final int MAX_SUM_THRESHOLD = 50;
 
     /**
      * Computes the point impact of a specific card given the current table sum.
      * Accounts for special dynamic conditions like the Ace (1 or 10).
-     * * @param card the card to evaluate
+     * @param card the card to evaluate
      * @param currentSum the current cumulative total score on the table
      * @return the integer value (positive or negative) added to the table
      */
@@ -40,8 +41,8 @@ public class GameRules {
     }
 
     /**
-     * Validates if playing a card complies with the primary boundary rule (<= 50).
-     * * @param card the card intended to be played
+     * Validates if playing a card complies with the primary boundary rule (&le; 50).
+     * @param card the card intended to be played
      * @param currentSum the current sum before making the move
      * @return true if the move is legal, false otherwise
      */

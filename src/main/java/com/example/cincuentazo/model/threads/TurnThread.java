@@ -9,13 +9,16 @@ import java.util.List;
 import java.util.*;
 
 /**
- * Thread responsible for managing the turn lifecycle in the game.
- * .
- * Controls the time limit for each turn, the automatic execution of moves
- by the Artificial Intelligence (AI), and the updating of the graphical user interface (UI)
- using JavaFX threads.
- * .
- * * @author Jorge Castro
+ * Thread responsible for managing the turn lifecycle in the game. <p>
+ *
+ * Coordinates player rotation, executes AI decisions, processes
+ * human-player synchronization, and schedules graphical interface
+ * updates through the JavaFX Application Thread. <p>
+ *
+ * The thread remains active until a victory condition is reached,
+ * or it is explicitly stopped.
+ *
+ * @author Jorge Luis Castro Scarpetta
  * @version 2.1
  */
 public class TurnThread extends Thread {

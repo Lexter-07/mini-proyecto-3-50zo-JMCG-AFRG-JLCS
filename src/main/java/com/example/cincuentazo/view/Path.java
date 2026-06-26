@@ -1,16 +1,18 @@
 package com.example.cincuentazo.view;
 
 /**
- * Utility class that stores the paths to all FXML views used in the application.
- * .
+ * Utility class that stores the paths to all FXML views used in the application. <p>
+ *
  * This class centralizes the location of UI resources, making it easier
  * to manage and update scene paths without hardcoding them throughout
- * the project.
- * .
+ * the project. <p>
+ *
  * Each constant represents a specific view of the 50zo game:
  * - Game view
  * - Menu view
- * - ...
+ * - Final View
+ *
+ * @author Jorge Luis Castro Scarpetta
  */
 
 public class Path {

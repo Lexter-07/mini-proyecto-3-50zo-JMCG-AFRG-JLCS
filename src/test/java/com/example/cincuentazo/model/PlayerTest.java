@@ -4,8 +4,21 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link Player} class. <p>
+ *
+ * Verifies player creation, hand management,
+ * and card capacity restrictions.
+ *
+ * @author Jose Manuel Cardona Gil
+ * @version 1.0
+ */
 class PlayerTest {
 
+    /**
+     * Verifies that a human player is created
+     * with the expected initial state.
+     */
     @Test
     void shouldCreateHumanPlayer() {
 
@@ -16,6 +29,10 @@ class PlayerTest {
         assertFalse(player.isEliminated());
     }
 
+    /**
+     * Verifies that adding a card correctly
+     * stores it in the player's hand.
+     */
     @Test
     void shouldAddCardToHand() {
 
@@ -26,6 +43,10 @@ class PlayerTest {
         assertEquals(1, player.getHand().size());
     }
 
+    /**
+     * Verifies that removing a card correctly
+     * updates the player's hand.
+     */
     @Test
     void shouldRemoveCardFromHand() {
 
@@ -39,6 +60,10 @@ class PlayerTest {
         assertTrue(player.getHand().isEmpty());
     }
 
+    /**
+     * Verifies that the player's hand never
+     * exceeds the maximum capacity of four cards.
+     */
     @Test
     void shouldNotAllowMoreThanFourCards() {
 

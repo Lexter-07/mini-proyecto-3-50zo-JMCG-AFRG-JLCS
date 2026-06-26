@@ -5,14 +5,14 @@ import com.example.cincuentazo.model.Card;
 /**
  * Utility class dedicated to translating internal game entities
  * into readable Spanish strings for the User Interface.
- * * @author Andrés Felipe Rodríguez García
+ * @author Andrés Felipe Rodríguez García
  * @version 1.0
  */
 public class Translation {
 
     /**
      * Translates internally formatted card logic to a readable Spanish UI string.
-     * * @param card The card to translate
+     * @param card The card to translate
      * @return Formatted string, e.g., "rey-corazones"
      */
     public static String generateSpanishCardName(Card card) {

@@ -1,3 +1,11 @@
+/**
+ * Defines the Java module for the Cincuentazo application. <p>
+ *
+ * This module declares the required JavaFX dependencies, exports the public
+ * packages that compose the application's API, and opens the necessary
+ * packages to the JavaFX runtime for FXML loading and reflection-based
+ * controller injection.
+ */
 module com.example.cincuentazo {
     requires javafx.controls;
     requires javafx.fxml;

@@ -22,7 +22,8 @@ import java.io.IOException;
  * The selected opponent count is maintained internally
  * and can later be passed to the game initialization logic.
  *
- * @author Jose Manuel Cardona Gil
+ * @author - Jose Manuel Cardona Gil. <p>
+ *         - Jorge Luis Castro Scarpetta.
  * @version 1.2
  */
 public class MenuController {

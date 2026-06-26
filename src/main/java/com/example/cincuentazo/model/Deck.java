@@ -10,11 +10,15 @@ import java.util.Stack;
 /**
  * Manages the draw deck pile using explicit Card objects.
  * Supports initialization, shuffling, and explicit drawing.
- * @author AndresF395
+ * @author Jorge Luis Castro, Andres Felipe Rodríguez
  * @version 1.0
  */
 public class Deck implements IDeck {
 
+    /**
+     * A LIFO structure that stores the remaining cards.
+     * The removal and addition operations are performed on the top of the stack.
+     */
     private final Stack<Card> drawPile;
 
     /**

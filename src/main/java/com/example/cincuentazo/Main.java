@@ -16,13 +16,21 @@ import java.io.IOException;
  * initializing the global {@link SceneManager} context with the primary workspace stage,
  * configuring window hook listeners, and routing the user to the default entry dashboard view.
  *
- * @author - Jorge Luis Castro Scarpetta <p>
- *         - Jose Manuel Cardona Gil <p>
- *         - Andres Felipe Rodríguez García <p>
+ * @author - Jorge Luis Castro Scarpetta. <p>
+ *         - Jose Manuel Cardona Gil. <p>
+ *         - Andres Felipe Rodríguez García.
  * @version 1.0
  */
 public class Main extends Application {
 
+    /**
+     * Launches the JavaFX application. <p>
+     *
+     * This method serves as the application's entry point and delegates the
+     * initialization process to the JavaFX runtime by invoking
+     * {@link javafx.application.Application#launch(String...)}.
+     * @param args the command-line arguments passed to the application.
+     */
     public static void main(String[] args) {
         launch(args);
     }

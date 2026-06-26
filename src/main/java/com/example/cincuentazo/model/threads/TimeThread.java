@@ -28,7 +28,7 @@ public class TimeThread extends Thread {
 
     /**
      * Constructs the TimeThread linked to a specific UI Label.
-     * * @param timeLabel The JavaFX Label where the time will be displayed.
+     * @param timeLabel The JavaFX Label where the time will be displayed.
      */
     public TimeThread(Label timeLabel) {
         this.timeLabel = timeLabel;
@@ -113,8 +113,6 @@ public class TimeThread extends Thread {
             pauseLock.notifyAll();
         }
     }
-
-    public int getSecondsElapsed() {return secondsElapsed;}
 
     /**
      * Gets the current elapsed gameplay duration pre-formatted for text display.

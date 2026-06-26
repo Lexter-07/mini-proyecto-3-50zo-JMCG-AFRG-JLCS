@@ -7,8 +7,21 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link Turn} class. <p>
+ *
+ * Verifies turn progression, elimination handling,
+ * and victory condition detection.
+ *
+ * @author Jose Manuel Cardona Gil
+ * @version 1.0
+ */
 class TurnTest {
 
+    /**
+     * Verifies that advancing the turn correctly
+     * selects the next player in the rotation.
+     */
     @Test
     void shouldAdvanceTurn() {
 
@@ -27,6 +40,10 @@ class TurnTest {
         );
     }
 
+    /**
+     * Verifies that eliminated players are skipped
+     * when advancing the turn sequence.
+     */
     @Test
     void shouldSkipEliminatedPlayer() {
 
@@ -52,6 +69,10 @@ class TurnTest {
         );
     }
 
+    /**
+     * Verifies that the victory condition is met
+     * when only one active player remains.
+     */
     @Test
     void shouldDetectVictoryCondition() {
 

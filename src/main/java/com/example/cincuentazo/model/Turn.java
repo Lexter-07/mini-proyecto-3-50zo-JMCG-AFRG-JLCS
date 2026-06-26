@@ -7,8 +7,8 @@ import java.util.List;
 /**
  * Controls structural turn transitions and handles matching loop sequences.
  * Skippable index points are calculated based on player elimination indices.
- * @author Andres Felipe Rodríguez
- * @version 1.0
+ * @author Andres Felipe Rodríguez García, Jorge Luis Castro Scarpetta
+ * @version 1.2
  */
 public class Turn implements ITurn {
 

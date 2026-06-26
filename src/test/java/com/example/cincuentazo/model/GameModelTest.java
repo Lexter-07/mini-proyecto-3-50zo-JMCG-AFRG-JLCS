@@ -6,8 +6,23 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link GameModel} class. <p>
+ *
+ * Verifies the initialization of a new match and the
+ * correct handling of player elimination.
+ *
+ * @author Jose Manuel Cardona Gil
+ * @version 1.0
+ */
 class GameModelTest {
 
+    /**
+     * Verifies that a new game is initialized correctly. <p>
+     *
+     * Ensures that each player receives four cards,
+     * an initial card is placed on the table and the round counter starts at one.
+     */
     @Test
     void shouldStartNewGameCorrectly() {
 
@@ -32,6 +47,10 @@ class GameModelTest {
         );
     }
 
+    /**
+     * Verifies that eliminating a player correctly updates
+     * their participation status.
+     */
     @Test
     void shouldEliminatePlayer() {
 

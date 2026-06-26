@@ -10,6 +10,7 @@ import com.example.cincuentazo.model.Player;
  * sequence and identifying the participant currently entitled
  * to perform a move.
  *
+ * @author Jorge Luis Castro Scarpetta
  * @version 1.0
  */
 public interface ITurn {

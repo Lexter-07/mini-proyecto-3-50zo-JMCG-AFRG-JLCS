@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"com.example.cincuentazo","l":"com.example.cincuentazo"},{"m":"com.example.cincuentazo","l":"com.example.cincuentazo.model"},{"m":"com.example.cincuentazo","l":"com.example.cincuentazo.model.intefaces"},{"m":"com.example.cincuentazo","l":"com.example.cincuentazo.model.threads"}];updateSearchResults();

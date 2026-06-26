@@ -15,7 +15,7 @@ import java.util.Random;
  * three difficulty levels, applying everything from random selections to
  * advanced heuristic evaluations depending on the current state of the game.
  *
- * @author Jorge Castro
+ * @author Jorge Luis Castro Scarpetta
  * @version 1.0
  */
 

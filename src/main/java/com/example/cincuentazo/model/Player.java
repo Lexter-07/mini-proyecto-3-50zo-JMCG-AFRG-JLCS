@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Domain entity model representing a player participating in the match.
  * Holds their hand data, identification metrics, and active gameplay standing.
- * @author Andres Felipe Rodríguez
+ * @author Andres Felipe Rodríguez García
  * @version 1.0
  */
 public class Player implements IPlayer {
